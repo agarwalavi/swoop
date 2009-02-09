@@ -1,0 +1,6 @@
+class OfferStatusTests extends GroovyTestCase {
+
+    void testSomething() {
+
+    }
+}

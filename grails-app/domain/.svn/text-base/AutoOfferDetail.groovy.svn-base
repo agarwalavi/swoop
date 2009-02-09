@@ -1,0 +1,104 @@
+class AutoOfferDetail extends BaseDomain implements Serializable
+{
+  static constraints =
+  {
+    logoUrl(nullable: true, blank: true, maxSize: 255)
+    offer(nullable: false)
+    account(nullable: true, blank: true, maxSize: 255)
+    city(nullable: true, blank: true, maxSize: 100)
+    state(nullable: true, blank: true, maxSize: 2)
+    zip(nullable: true, blank: true, maxSize: 25)
+    type(nullable: true, blank: true, maxSize: 100)
+    newAuto(nullable: true)
+    collateral(nullable: true)
+    payment(nullable: true, scale: 2)
+    purpose(nullable: true, blank: true, maxSize: 100)
+    term(nullable: true)
+    frequency(nullable: true, blank: true, maxSize: 25)
+    originationDate(nullable: true)
+    originationAmount(nullable: true)
+    rate(nullable: true)
+    code(nullable: true, blank: true, maxSize: 100)
+    currentBalance(nullable: true)
+    lastActivityDate(nullable: true)
+    activityCode(nullable: true, blank: true, maxSize: 100)
+    nextPaymentDate(nullable: true)
+    accruedInterest(nullable: true)
+    creditLimit(nullable: true)
+    delinquent(nullable: true)
+    late30Count(nullable: true)
+    late60Count(nullable: true)
+    late90Count(nullable: true)
+    late120Count(nullable: true)
+    insider(nullable: true)
+    firstPaymentDate(nullable: true)
+    maturityDate(nullable: true)
+    extended(nullable: true, blank: true, maxSize: 100)
+    status(nullable: true, blank: true, maxSize: 100)
+    bk(nullable: true, blank: true, maxSize: 100)
+    repossessed(nullable: true)
+    vsi(nullable: true)
+    score(nullable: true)
+    fico(nullable: true)
+    debtToIncome(nullable: true)
+    vin(nullable: true, blank: true, maxSize: 100)
+    make(nullable: true, blank: true, maxSize: 100)
+    model(nullable: true, blank: true, maxSize: 100)
+    year(nullable: true, blank: true, maxSize: 25)
+    mileage(nullable: true)
+    productType(nullable: true, blank: true, maxSize: 100)
+    dealerNumber(nullable: true, blank: true, maxSize: 100)
+    dealerLocationId(nullable: true, blank: true, maxSize: 100)
+    monthsRemaining(nullable: true)
+    asOfDate(nullable: true)
+  }
+  String logoUrl
+  Offer offer
+  String account
+  String city
+  String state
+  String zip
+  String type
+  Boolean newAuto
+  Integer collateral
+  BigDecimal payment
+  String purpose
+  BigDecimal term
+  String frequency
+  Date originationDate
+  BigDecimal originationAmount
+  BigDecimal rate
+  String code
+  BigDecimal currentBalance
+  Date lastActivityDate
+  String activityCode
+  Date nextPaymentDate
+  BigDecimal accruedInterest
+  BigDecimal creditLimit
+  BigDecimal delinquent
+  BigDecimal late30Count
+  BigDecimal late60Count
+  BigDecimal late90Count
+  BigDecimal late120Count
+  String insider
+  Date firstPaymentDate
+  Date maturityDate
+  String extended
+  String status
+  String bk
+  Boolean repossessed
+  Boolean vsi
+  BigDecimal score
+  BigDecimal fico
+  BigDecimal debtToIncome
+  String vin
+  String make
+  String model
+  String year
+  BigDecimal mileage
+  String productType
+  String dealerNumber
+  String dealerLocationId
+  BigDecimal monthsRemaining
+  Date asOfDate
+}

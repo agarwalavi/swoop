@@ -1,0 +1,14 @@
+<plugin name='help-balloons' version='1.1'>
+  <author>Paul Fernley</author>
+  <authorEmail>paul@pfernley.orangehome.co.uk</authorEmail>
+  <title>Grails TagLib plugin for the HelpBalloon system from Beau Scott</title>
+  <description>The help-balloons plugin provides a Grails TagLib wrapper around the HelpBalloon
+system from Beau Scott. This plugin provides the most basic support possible to
+give a simple balloon help (a.k.a. Callout) facility in GSPs typically for use
+in intranet applications.
+</description>
+  <documentation>http://grails.org/HelpBalloons+Plugin</documentation>
+  <resources>
+    <resource>HelpBalloonTagLib</resource>
+  </resources>
+</plugin>

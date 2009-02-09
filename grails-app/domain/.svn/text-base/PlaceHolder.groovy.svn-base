@@ -1,0 +1,22 @@
+import com.acig.acigweb.reference.PlaceHolderType
+import com.acig.acigweb.reference.PlaceHolderDataType
+import com.acig.acigweb.reference.TopObjectType
+import com.acig.acigweb.reference.PlaceHolderType
+
+public class PlaceHolder extends BaseDomain implements Serializable
+{
+  static constraints = {
+    placeHolderType(nullable: false, blank: false, inList: PlaceHolderType.getList(), maxSize: 100)
+    placeHolder(nullable: false, blank: false, unique: ['placeHolderType', 'attributeName'], maxSize: 100)
+    attributeName(nullable: false, blank: false, maxSize: 255)
+    dataType(nullable: false, blank: false, inList: PlaceHolderDataType.getList(), maxSize: 100)
+    topObject(nullable: false, blank: false, inList: TopObjectType.getList(), maxSize: 100)
+    description(nullable: true, blank: true, maxSize: 255)
+  }
+  String placeHolderType
+  String placeHolder
+  String attributeName
+  String dataType
+  String topObject
+  String description
+}

@@ -1,0 +1,19 @@
+<plugin name='settings' version='1.0'>
+  <author>Paul Fernley</author>
+  <authorEmail>paul@pfernley.orangehome.co.uk</authorEmail>
+  <title>Application settings (global constants) plugin</title>
+  <description>Allows for the creation, maintenance and use of system-wide application settings
+(global constants) stored in a database. The values of the various settings can
+be of type String, Intger, BigDecimal or Date. The usual List, Show, Edit and
+Create views are included and, after installing the plugin, will be available at
+a URL such as http://myServer/myApp/setting/list etc. These views assume you are
+using a layout called 'main'.
+</description>
+  <documentation>http://grails.org/Settings+Plugin</documentation>
+  <resources>
+    <resource>SettingController</resource>
+    <resource>Setting</resource>
+    <resource>SettingService</resource>
+    <resource>SettingTagLib</resource>
+  </resources>
+</plugin>

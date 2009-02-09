@@ -1,0 +1,88 @@
+import com.acig.acigweb.reference.OfferStatusType
+
+class HomeController extends BaseController
+{
+  static authorizations = [
+          home: Role.ALL_ROLES,
+          offers: Role.ALL_ROLES,
+          bids: Role.ALL_ROLES,
+          subscriptions: Role.ALL_ROLES,
+          offerSummary: Role.ALL_ROLES,
+          originatorSummary: Role.ALL_ROLES
+  ]
+  def bidService
+  def subscriptionService
+  def defaultAction = "home"
+
+  def home = {
+    def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    if (!params.max) params.max = 10
+    offers = getOfferList(params.max, params.offset)
+    bids = getBidList(params.max, params.offset)
+    subscriptions = getSubscriptionList(params.max, params.offset)
+    [subscriptions: subscriptions, offers: offers, bids: bids, userInstance: userInstance]
+  }
+  def offers = {
+    def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    if (!params.max) params.max = 10
+    offers = getOfferList(params.max, params.offset)
+    bids = getBidList(params.max, 0)
+    subscriptions = getSubscriptionList(params.max, 0)
+    render(view: 'home', model: [subscriptions: subscriptions, offers: offers, bids: bids, userInstance: userInstance])
+  }
+  def bids = {
+    bids = getBidList(params.max, params.offset)
+  }
+  def subscriptions = {
+    subscriptions = getSubscriptionList(params.max, params.offset)
+  }
+
+  def offerSummary = {
+    def offer = Offer.get(params.id)
+    def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    def currentBids = bidService.getCurrentBidList(offer, userInstance)
+    render(template: "/shared/offerSummary", model: [offer: offer, currentBids: currentBids, userInstance: userInstance])
+  }
+  def originatorSummary = {
+    def originator = Originator.get(params.id)
+    render(template: "/shared/originatorSummary", model: [originator: originator])
+  }
+  // These are internal methods below here
+  def getOfferList(def inMax, def inOffset)
+  {
+    User userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    Date now = new Date()
+    return Offer.createCriteria().list(max: inMax, offset: inOffset) {
+      and {
+        // TODO Only in your affiliate
+        //eq('affiliate.id', userInstance.affiliate.id)
+        // If it has not closed bidding yet
+        ge("bidCloseDate", now)
+        // If is it marked as open for bid
+        'in'("status", [OfferStatusType.OPEN.name()])
+        // TODO Handle originators role
+        if (userInstance?.originator != null && userInstance?.originator?.id > 0)
+        {
+          eq('originator.id', userInstance.originator.id)
+        }
+      }
+    }
+  }
+
+  def getSubscriptionList(def inMax, def inOffset)
+  {
+    User userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    return subscriptionService.getSubscriptionList(userInstance)
+  }
+
+  def getBidList(def inMax, def inOffset)
+  {
+    Date now = new Date()
+    User userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    return Bid.createCriteria().list(max: inMax, offset: inOffset) {
+      // My Bids only
+      eq('user.id', userInstance.id)
+      ge('dateCreated', now - 30)
+    }
+  }
+}

@@ -1,0 +1,436 @@
+import com.acig.acigweb.reference.DataType
+
+class DataLoadingService
+{
+  // must use local commits for now
+  boolean transactional = false
+
+  def loadMonthlyData(InputStream inStream, Offer inOffer, String inDateFormat)
+  {
+    def errors = [:]
+    def errorDetails = [:]
+    List badLines = new ArrayList()
+    def successCount = 0
+    def lineCount = 0
+    Boolean hasError = false
+    RptLoanDetail.withTransaction {status ->
+      def detail = inStream.eachLine(
+              {
+                def columns = parseCsvLine(it, ',' as char, '"' as char)
+                lineCount++
+                if (lineCount != 1)
+                {
+                  RptLoanDetail detail = new RptLoanDetail()
+                  if (columns.size() >= 23)
+                  {
+                    try
+                    {
+                      String poolId = columns[0]
+                      processData(detail, columns, "accountNumber", 1, DataType.STRING, "")
+                      processData(detail, columns, "fico", 2, DataType.INTEGER, "")
+                      processData(detail, columns, "contractDate", 3, DataType.DATE, inDateFormat)
+                      processData(detail, columns, "firstPaymentDueDate", 4, DataType.DATE, inDateFormat)
+                      processData(detail, columns, "nextDueDate", 5, DataType.DATE, inDateFormat)
+                      processData(detail, columns, "maturityDate", 6, DataType.DATE, inDateFormat)
+                      processData(detail, columns, "originalTerm", 7, DataType.INTEGER, "")
+                      processData(detail, columns, "remainingTerm", 8, DataType.INTEGER, "")
+                      processData(detail, columns, "loanAmt", 9, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "previousMonthBalanceAmt", 10, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "mtdPrincipalPaidAmt", 11, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "principalAdjustmentDebitAmt", 12, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "principalAdjusttmentCreditAmt", 13, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "outstandingBalanceAmt", 14, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "itdPrincipalRepaidAmt", 15, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "scheduledPaymentAmt", 16, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "daysPastDue", 17, DataType.INTEGER, "")
+                      processData(detail, columns, "termFrequency", 18, DataType.STRING, "")
+                      processData(detail, columns, "collateralType", 19, DataType.STRING, "")
+                      processData(detail, columns, "collateralDescription", 20, DataType.STRING, "")
+                      processData(detail, columns, "notes", 21, DataType.STRING, "")
+                      processData(detail, columns, "asOfDate", 22, DataType.DATE, inDateFormat)
+                      detail.setOffer(inOffer)
+                      if (!detail.save())
+                      {
+                        detail.errors.allErrors.each {
+                          println it
+                          hasError = true
+                          status.setRollbackOnly()
+                        }
+                      }
+                      else
+                      {
+                        successCount++
+                      }
+                    }
+                    catch (IllegalArgumentException ex)
+                    {
+                      log.error "Error caught importing line " + lineCount + ex.getMessage()
+                      errorDetails = [:]
+                      errorDetails["BADLINE"] = lineCount
+                      errorDetails["MESSAGE"] = ex.getMessage()
+                      badLines.add(errorDetails)
+                      hasError = true
+                      status.setRollbackOnly()
+                    }
+                  }
+                  else
+                  {
+                    errorDetails = [:]
+                    errorDetails["BADLINE"] = lineCount
+                    errorDetails["MESSAGE"] = "Invalid number of columns"
+                    badLines.add(errorDetails)
+                    hasError = true
+                    status.setRollbackOnly()
+                  }
+                }
+                else
+                {
+                  println "Skipping row one"
+                }
+              })
+    }
+    // TODO handle rollback
+    errors["SUCCESSCOUNT"] = successCount
+    errors["BADLINES"] = badLines
+    errors["TOTALLINES"] = lineCount
+
+    return errors
+  }
+
+  def loadOfferData(InputStream inStream, Offer inOffer, String inDateFormat)
+  {
+    def errors = [:]
+    def errorDetails = [:]
+    List badLines = new ArrayList()
+    // TODO Handle other than auto offers
+    def successCount = 0
+    def lineCount = 0
+    Boolean hasError = false
+    AutoOfferDetail.withTransaction {status ->
+      // Delete all the records for this offer
+      AutoOfferDetail.executeUpdate("delete from AutoOfferDetail as ao where ao.offer = :theOffer", [theOffer: inOffer])
+      def detail = inStream.eachLine(
+              {
+                def columns = parseCsvLine(it, ',' as char, '"' as char)
+                lineCount++
+                if (lineCount != 1)
+                {
+                  AutoOfferDetail detail = new AutoOfferDetail()
+                  if (columns.size() >= 47)
+                  {
+                    try
+                    {
+                      processData(detail, columns, "account", 0, DataType.STRING, "")
+                      processData(detail, columns, "city", 1, DataType.STRING, "")
+                      processData(detail, columns, "state", 2, DataType.STRING, "")
+                      processData(detail, columns, "zip", 3, DataType.STRING, "")
+                      processData(detail, columns, "type", 4, DataType.STRING, "")
+                      processData(detail, columns, "newAuto", 5, DataType.NEW_USED, "")
+                      processData(detail, columns, "collateral", 6, DataType.INTEGER, "")
+                      processData(detail, columns, "payment", 7, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "purpose", 8, DataType.STRING, "")
+                      processData(detail, columns, "term", 9, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "frequency", 10, DataType.STRING, "")
+                      processData(detail, columns, "originationDate", 11, DataType.DATE, inDateFormat)
+                      processData(detail, columns, "originationAmount", 12, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "rate", 13, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "code", 14, DataType.STRING, "")
+                      processData(detail, columns, "currentBalance", 15, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "lastActivityDate", 16, DataType.DATE, inDateFormat)
+                      processData(detail, columns, "activityCode", 17, DataType.STRING, "")
+                      processData(detail, columns, "nextPaymentDate", 18, DataType.DATE, inDateFormat)
+                      processData(detail, columns, "accruedInterest", 19, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "creditLimit", 20, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "delinquent", 21, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "late30Count", 22, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "late60Count", 23, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "late90Count", 24, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "late120Count", 25, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "insider", 26, DataType.STRING, "")
+                      processData(detail, columns, "firstPaymentDate", 27, DataType.DATE, inDateFormat)
+                      processData(detail, columns, "maturityDate", 28, DataType.DATE, inDateFormat)
+                      processData(detail, columns, "extended", 29, DataType.STRING, "")
+                      processData(detail, columns, "status", 30, DataType.STRING, "")
+                      processData(detail, columns, "bk", 31, DataType.STRING, "")
+                      processData(detail, columns, "repossessed", 32, DataType.BOOLEAN, "")
+                      processData(detail, columns, "vsi", 33, DataType.BOOLEAN, "")
+                      processData(detail, columns, "score", 34, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "fico", 35, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "debtToIncome", 36, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "vin", 37, DataType.STRING, "")
+                      processData(detail, columns, "make", 38, DataType.STRING, "")
+                      processData(detail, columns, "model", 39, DataType.STRING, "")
+                      processData(detail, columns, "year", 40, DataType.STRING, "")
+                      processData(detail, columns, "mileage", 41, DataType.STRING, "")
+                      processData(detail, columns, "productType", 42, DataType.STRING, "")
+                      processData(detail, columns, "dealerNumber", 43, DataType.STRING, "")
+                      processData(detail, columns, "dealerLocationId", 44, DataType.STRING, "")
+                      processData(detail, columns, "monthsRemaining", 45, DataType.BIGDECIMAL, "")
+                      processData(detail, columns, "asOfDate", 46, DataType.DATE, inDateFormat)
+                      detail.setOffer(inOffer)
+                      if (!detail.save())
+                      {
+                        detail.errors.allErrors.each {
+                          println it
+                        }
+                        hasError = true
+                        status.setRollbackOnly()
+                      }
+                      else
+                      {
+                        successCount++
+                      }
+                    }
+                    catch (IllegalArgumentException ex)
+                    {
+                      log.error "Error caught importing line " + lineCount + ex.getMessage()
+                      errorDetails = [:]
+                      errorDetails["BADLINE"] = lineCount
+                      errorDetails["MESSAGE"] = ex.getMessage()
+                      badLines.add(errorDetails)
+                      hasError = true
+                      status.setRollbackOnly()
+                    }
+                  }
+                  else
+                  {
+                    errorDetails = [:]
+                    errorDetails["BADLINE"] = lineCount
+                    errorDetails["MESSAGE"] = "Invalid number of columns"
+                    badLines.add(errorDetails)
+                    hasError = true
+                    status.setRollbackOnly()
+                  }
+                }
+                else
+                {
+                  println "Skipping row one"
+                }
+              })
+    }
+    // TODO Rollback here if required
+    errors["SUCCESSCOUNT"] = successCount
+    errors["BADLINES"] = badLines
+    errors["TOTALLINES"] = lineCount
+
+    return errors
+  }
+
+
+  void processData(def inDetail, List inColumns, String inAttribute, Integer inColumnNumber, DataType inType, String inDateFormat)
+  {
+    def value
+    switch (inType)
+    {
+      case DataType.DATE:
+        value = convertToDate(inColumns, inColumnNumber, inDateFormat)
+        break
+      case DataType.NEW_USED:
+        value = convertToNewUsed(inColumns, inColumnNumber)
+        break
+      case DataType.STATE:
+        value = convertToState(inColumns, inColumnNumber)
+        break
+      case DataType.BOOLEAN:
+        value = convertToBoolean(inColumns, inColumnNumber)
+        break
+      case DataType.BIGDECIMAL:
+        value = convertToBigDecimal(inColumns, inColumnNumber)
+        break
+      case DataType.INTEGER:
+        value = convertToInteger(inColumns, inColumnNumber)
+        break
+      case DataType.LONG:
+        value = convertToLong(inColumns, inColumnNumber)
+        break
+      default:
+        value = scrubString(inColumns, inColumnNumber)
+    }
+    inDetail[inAttribute] = value
+  }
+
+  def scrubString(List inColumns, Integer inColumn)
+  {
+    def inString = inColumns[inColumn]
+    if (inString != null && inString.length() > 0)
+    {
+      inString = inString.replaceAll(/"/, "")
+      inString = inString.replaceAll(",", "")
+      inString = inString.replaceAll('\\$', "")
+      inString = inString.trim()
+    }
+    return inString
+  }
+
+  def convertToString(List inColumns, Integer inColumn)
+  {
+    def inString = scrubString(inColumns, inColumn)
+    return inString
+  }
+
+  def convertToInteger(List inColumns, Integer inColumn)
+  {
+    def value
+    def inString = scrubString(inColumns, inColumn)
+    if (inString == null || inString.length() == 0)
+    {
+      value = 0
+    }
+    else
+    {
+      try
+      {
+        value = Integer.valueOf(inString)
+      }
+      catch (NumberFormatException ex)
+      {
+        throw new IllegalArgumentException("Cannot convert value " + inString + " in column " + (inColumn + 1) + " to Integer")
+      }
+    }
+    return value
+  }
+
+  def convertToLong(List inColumns, Integer inColumn)
+  {
+    def value
+    def inString = scrubString(inColumns, inColumn)
+    if (inString == null || inString.length() == 0)
+    {
+      value = 0
+    }
+    else
+    {
+      try
+      {
+        value = Long.valueOf(inString)
+      }
+      catch (NumberFormatException ex)
+      {
+        throw new IllegalArgumentException("Cannot convert value " + inString + " in column " + (inColumn + 1) + " to Long")
+      }
+    }
+    return value
+  }
+
+  def convertToBigDecimal(List inColumns, Integer inColumn)
+  {
+    def value
+    def inString = scrubString(inColumns, inColumn)
+    if (inString == null || inString.length() == 0)
+    {
+      value = 0
+    }
+    else
+    {
+      try
+      {
+        value = new BigDecimal(inString)
+      }
+      catch (NumberFormatException ex)
+      {
+        throw new IllegalArgumentException("Cannot convert value " + inString + " in column " + (inColumn + 1) + " to decimal")
+      }
+    }
+    return value
+  }
+
+  def convertToDate(List inColumns, Integer inColumn, String inFormat)
+  {
+    Date theDate = null
+    def inString = scrubString(inColumns, inColumn)
+    if (inString != null && inString.length() > 0)
+    {
+      theDate = new java.text.SimpleDateFormat(inFormat).parse(inString)
+    }
+    return theDate
+  }
+
+  def convertToNewUsed(List inColumns, Integer inColumn)
+  {
+    // TODO Handle if begins with logic
+    boolean isNew = null
+    def inString = scrubString(inColumns, inColumn)
+    if (inString != null && inString.length() > 0)
+    {
+      if (inString.equalsIgnoreCase("N"))
+      {
+        isNew = true
+      }
+      else
+      {
+        isNew = false
+      }
+    }
+    return isNew
+  }
+
+  def convertToBoolean(List inColumns, Integer inColumn)
+  {
+    boolean value = null
+    // TODO Handle all possible Values
+    def inString = scrubString(inColumns, inColumn)
+    if (inString != null && inString.length() > 0)
+    {
+      if (inString.equalsIgnoreCase("N"))
+      {
+        value = false
+      }
+      else
+      {
+        value = true
+      }
+    }
+    return value
+  }
+
+  def convertToState(List inColumns, Integer inColumn)
+  {
+    // TODO Handle the conversion
+    def inString = scrubString(inColumns, inColumn)
+    return inString
+  }
+
+  def parseCsvLine(String inLine, char inDelimiter, char inSeparator)
+  {
+    def columns = []
+    boolean withinSeparator = false
+    StringBuffer buffer = new StringBuffer()
+    char[] characters = inLine.toCharArray()
+    characters.each {
+      // If we hit a delimeter see if we are inside a paren
+      if (it == inDelimiter)
+      { // If in parens then keep it
+        if (withinSeparator)
+        {
+          buffer.append(it)
+        }
+        else
+        // store existing string and clear buffer
+        {
+          columns.add(buffer.toString().trim())
+          log.debug "Processing CSV Entry " + buffer.toString().trim()
+          buffer.setLength(0)
+        }
+      }
+      else if (it == inSeparator)
+      {
+        if (withinSeparator)
+        {
+          withinSeparator = false
+        }
+        else
+        {
+          withinSeparator = true
+        }
+      }
+      else
+      {
+        buffer.append(it)
+      }
+    }
+    // Store the last entry
+    columns.add(buffer.toString().trim())
+
+    return columns
+  }
+}

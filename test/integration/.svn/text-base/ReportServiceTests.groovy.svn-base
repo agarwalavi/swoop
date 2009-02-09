@@ -1,0 +1,6 @@
+class ReportServiceTests extends GroovyTestCase {
+
+    void testSomething() {
+
+    }
+}

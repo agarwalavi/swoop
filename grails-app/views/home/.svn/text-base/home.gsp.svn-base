@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <title>ACIG Management Home</title>
+  <meta name="layout" content="main"/>
+  <g:javascript src="jquery/jquery.js"/>
+  <!-- You must call this no conflict before loading the ui library -->
+  <script>
+    var $ui = jQuery.noConflict();
+  </script>
+  <g:javascript src="jquery/ui.core.js"/>
+  <g:javascript src="jquery/ui.tabs.js"/>
+  <g:javascript src="jquery/ui.dialog.js"/>
+  <g:javascript src="jquery/ui.resizable.js"/>
+  <g:javascript src="jquery/ui.draggable.js"/>
+  <script>
+    var $j = jQuery.noConflict();
+    $j(document).ready(function()
+    {
+      $ui("#homedata > ul").tabs({ fx: {
+        opacity: 'toggle',
+        duration: 'fast'
+      } });
+    });
+  </script>
+  <script type="text/javascript">
+    function openStateConcentration()
+    {
+      $ui("#stateConcentrationDialog").dialog({
+        autoOpen:true,
+        bgiframe:true,
+        resizable:true,
+        modal:true,
+        width:380,
+        height:470,
+        buttons: {
+          Ok:function()
+          {
+            $ui(this).dialog('close');
+          }}});
+      $ui("#stateConcentrationDialog").dialog('open');
+    }
+  </script>
+</head>
+<body>
+<div>
+  <g:acigFlash/>
+  <div id="homedata">
+    <ul>
+      <g:if test="${offers?.size() >0}">
+        <li><a href="#offer-content"><span>Current Offers</span></a></li>
+      </g:if>
+      <g:if test="${bids?.size() >0}">
+        <li><a href="#bid-content"><span>My Bids</span></a></li>
+      </g:if>
+      <g:if test="${subscriptions?.size() >0}">
+        <li><a href="#subscription-content"><span>My Subscriptions</span></a></li>
+      </g:if>
+    </ul>
+    <g:if test="${offers?.size() >0}">
+      <div id="offer-content">
+        <div class="tableHeading"><g:message code="label.currentOffers"/></div>
+        <div class="table">
+          <table id="offerTable">
+            <thead>
+            <tr>
+              <th><g:message code="column.offer"/></th>
+              <th><g:message code="column.originator"/></th>
+              <th><g:message code="column.amount"/></th>
+              <th><g:message code="column.description"/></th>
+              <th><g:message code="column.bidOpenDate"/></th>
+              <th><g:message code="column.bidCloseDate"/></th>
+              <th><g:message code="column.createBid"/></th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${offers}" status="i" var="offerInstance">
+              <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                <td><g:remoteLink action="offerSummary" id="${offerInstance?.id}" update="dataSummary">${offerInstance?.offerId}</g:remoteLink></td>
+                <td><g:remoteLink action="originatorSummary" id="${offerInstance?.originator?.id}" update="dataSummary">${offerInstance?.originator?.companyShortName}</g:remoteLink></td>
+                <td><g:formatMoney money="${offerInstance?.participationAmt}"/></td>
+                <td>${offerInstance?.shortType}&nbsp;<g:helpBalloon title="Offer Description" code="home.offer.description"/></td>
+                <td><g:formatDate format="MM/dd/yy hh a" date="${offerInstance?.bidOpenDate}"/></td>
+                <td><g:formatDate format="MM/dd/yy hh a" date="${offerInstance?.bidCloseDate}"/></td>
+                <g:if test="${offerInstance?.participationAmt?.floatValue() > 0 && userInstance?.bidders?.size() > 0 && offerInstance?.bidOpenDate <= new Date() && offerInstance?.bidCloseDate >= new Date() && offerInstance?.status == 'OPEN'}">
+                  <td><g:link controller="bid" action="create" params="[offerId:offerInstance?.id]"><g:message code="label.createBid"/></g:link></td>
+                </g:if>
+                <g:else><td><g:message code="label.comingSoon"/></td></g:else>
+              </tr>
+            </g:each>
+            </tbody>
+          </table>
+        </div>
+        <div class="paginateButtons">
+          <g:paginate total="${offers.totalCount}" action="offers"/>
+        </div>
+        <div class="clearfix" id="dataSummary"></div>
+      </div>
+    </g:if>
+    <g:if test="${bids?.size() >0}">
+      <div id="bid-content">
+        <div class="tableHeading"><g:message code="label.myBids"/></div>
+        <div class="table">
+          <table id="bidTable">
+            <thead>
+            <tr>
+              <th><g:message code="column.bid"/></th>
+              <th><g:message code="column.offer"/></th>
+              <th><g:message code="column.originator"/></th>
+              <th><g:message code="column.bidCloseDate"/></th>
+              <th><g:message code="column.price"/></th>
+              <th><g:message code="column.coupon"/></th>
+              <th><g:message code="column.amount"/></th>
+              <th><g:message code="column.status"/></th>
+              <th><g:message code="column.createBid"/></th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${bids}" status="i" var="bidInstance">
+              <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+
+                <td><g:link controller="bid" action="show" id="${bidInstance?.id}">${bidInstance?.id}</g:link></td>
+                <td><g:remoteLink action="offerSummary" id="${bidInstance?.offer?.id}" update="bidOffer">${bidInstance?.offer?.offerId}</g:remoteLink></td>
+                <td><g:remoteLink action="originatorSummary" id="${bidInstance?.offer?.id}" update="bidOffer">${bidInstance?.offer?.originator?.companyName}</g:remoteLink></td>
+                <td><g:formatDate format="MM-dd-yy hh a" date="${bidInstance?.offer?.bidCloseDate}"/></td>
+                <td>${bidInstance?.pricePct}&nbsp;%</td>
+                <td>${bidInstance?.couponPct}&nbsp;%</td>
+                <td><g:formatMoney money="${bidInstance?.amt}"/></td>
+                <td>${bidInstance?.status}</td>
+                <g:if test="${bidInstance?.offer?.participationAmt?.floatValue() > 0 &&  userInstance?.bidders?.size() > 0  && bidInstance?.offer?.bidOpenDate <= new Date() && bidInstance?.offer?.bidCloseDate >= new Date() && bidInstance?.offer?.status == 'OPEN'}">
+                  <td><g:link controller="bid" action="create" params="[offerId:bidInstance?.offer?.id]"><g:message code="label.resubmit"/></g:link></td>
+                </g:if>
+                <g:else><td><g:message code="label.notAvailable"/></td></g:else>
+              </tr>
+            </g:each>
+            </tbody>
+          </table>
+          <div class="paginateButtons">
+            <g:paginate total="${bids.totalCount}" action="bids"/>
+          </div>
+        </div>
+        <div id="bidOffer"></div>
+      </div>
+    </g:if>
+    <g:if test="${subscriptions?.size() >0}">
+      <div id="subscription-content">
+        <div class="tableHeading"><g:message code="label.mySubscriptions"/></div>
+        <div class="table">
+          <table id="subscriptionTable">
+            <thead>
+            <tr>
+              <th><g:message code="subscription.column.id"/></th>
+              <th><g:message code="subscription.column.offer"/></th>
+              <th><g:message code="subscription.column.couponPct"/></th>
+              <th><g:message code="subscription.column.ownershipPct"/></th>
+              <th><g:message code="subscription.column.effectiveDate"/></th>
+              <th><g:message code="subscription.column.settlementDate"/></th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${subscriptions}" status="i" var="subscriptionInstance">
+              <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                <td><g:link controller="subscription" action="show" id="${subscriptionInstance?.id}">${subscriptionInstance?.id}</g:link></td>
+                <td>${subscriptionInstance.offer.offerId}</td>
+                <td>${subscriptionInstance.couponPct}&nbsp;%</td>
+                <td>${subscriptionInstance.ownershipPct}&nbsp;%</td>
+                <td><g:formatDate format="MM/dd/yy" date="${subscriptionInstance?.effectiveDate}"/></td>
+                <td><g:formatDate format="MM/dd/yy" date="${subscriptionInstance?.settlementDate}"/></td>
+              </tr>
+            </g:each>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </g:if>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+class SubscriptionController extends BaseController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN],
+          delete: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN],
+          update: [Role.MASTER_ADMIN],
+          create: [Role.MASTER_ADMIN],
+          save: [Role.MASTER_ADMIN]
+  ]
+  def index = { redirect(action: list, params: params) }
+
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def list = {
+    if (!params.max) params.max = 10
+    [subscriptionInstanceList: Subscription.list(params)]
+  }
+
+  def show = {
+    def subscriptionInstance = Subscription.get(params.id)
+
+    if (!subscriptionInstance)
+    {
+      flash.message = "Subscription not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    { return [subscriptionInstance: subscriptionInstance] }
+  }
+
+  def delete = {
+    def subscriptionInstance = Subscription.get(params.id)
+    if (subscriptionInstance)
+    {
+      subscriptionInstance.enabled = false
+      flash.message = "Subscription ${params.id} deleted"
+      redirect(action: list)
+    }
+    else
+    {
+      flash.message = "Subscription not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def edit = {
+    def subscriptionInstance = Subscription.get(params.id)
+
+    if (!subscriptionInstance)
+    {
+      flash.message = "Subscription not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      return [subscriptionInstance: subscriptionInstance]
+    }
+  }
+
+  def update = {
+    def subscriptionInstance = Subscription.get(params.id)
+    if (subscriptionInstance)
+    {
+      subscriptionInstance.properties = params
+      if (!subscriptionInstance.hasErrors() && subscriptionInstance.save())
+      {
+        flash.message = "Subscription ${params.id} updated"
+        redirect(action: show, id: subscriptionInstance.id)
+      }
+      else
+      {
+        render(view: 'edit', model: [subscriptionInstance: subscriptionInstance])
+      }
+    }
+    else
+    {
+      flash.message = "Subscription not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+    }
+  }
+
+  def create = {
+    def subscriptionInstance = new Subscription()
+    subscriptionInstance.properties = params
+    return ['subscriptionInstance': subscriptionInstance]
+  }
+
+  def save = {
+    def subscriptionInstance = new Subscription(params)
+    if (!subscriptionInstance.hasErrors() && subscriptionInstance.save())
+    {
+      flash.message = "Subscription ${subscriptionInstance.id} created"
+      redirect(action: show, id: subscriptionInstance.id)
+    }
+    else
+    {
+      render(view: 'create', model: [subscriptionInstance: subscriptionInstance])
+    }
+  }
+}

@@ -1,0 +1,92 @@
+import com.acig.acigweb.reference.BidStatusType
+import com.acig.acigweb.reference.OfferType
+
+public class BidService
+{
+  boolean transactional = true
+
+  def serviceMethod()
+  {
+  }
+
+  boolean validBidder(User inUser, Bidder inBidder)
+  {
+    def status = false
+    if (inBidder == null)
+    {
+      return status
+    }
+    def bidders = Bidder.createCriteria().list() {
+      eq('id', inBidder.id)
+      people {
+        eq('id', inUser.id)
+      }
+    }
+    if (bidders != null && bidders.size() > 0)
+    {
+      status = true
+    }
+    return status
+  }
+
+  List getCurrentBidList(Offer inOffer, User inUser)
+  {
+    if (inOffer == null)
+    {
+      return new ArrayList()
+    }
+    String query = ""
+    if (inOffer.type.equalsIgnoreCase(OfferType.WHOLE_LOAN.name()))
+    {
+      query = "from Bid as b where b.offer = :theOffer  and b.status != :status order by b.priceAmt desc, b.amt desc, b.dateCreated"
+    }
+    else
+    {
+      query = "from Bid as b where b.offer = :theOffer and b.status != :status order by b.couponPct asc, b.amt desc, b.dateCreated"
+    }
+
+    List bids = Bid.findAll(query, [theOffer: inOffer, status: BidStatusType.INACTIVE.name()])
+
+    BigDecimal amountAvailable = inOffer.participationAmt
+    //First remove all awarded bids from the amount available
+    List awarded = new ArrayList()
+    List active = new ArrayList()
+    bids.each {
+      if (it.status == BidStatusType.AWARDED.name())
+      {
+        amountAvailable = amountAvailable.add(-it.awardedAmt)
+        awarded.add(it)
+      }
+      else
+      {
+        active.add(it)
+      }
+    }
+    active.each {
+      if (it.user.username == inUser.username)
+      {
+        it.myBid = true
+      }
+      if (amountAvailable != null && amountAvailable.floatValue() > 0 && it.amt != null && it.amt.floatValue() > 0)
+      {
+        if (it.amt.floatValue() < amountAvailable.floatValue())
+        {
+          it.pendingAmt = it.amt
+          amountAvailable = amountAvailable.add(-it.amt)
+        }
+        else
+        {
+          it.pendingAmt = new BigDecimal(amountAvailable)
+          amountAvailable = null
+        }
+      } else
+      {
+        it.pendingAmt = new BigDecimal(0)
+      }
+    }
+    bids.clear()
+    bids.addAll(awarded)
+    bids.addAll(active)
+    return bids
+  }
+}

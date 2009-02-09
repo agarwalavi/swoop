@@ -1,0 +1,104 @@
+class TrackedIndexController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN],
+          delete: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN],
+          update: [Role.MASTER_ADMIN],
+          create: [Role.MASTER_ADMIN],
+          save: [Role.MASTER_ADMIN]
+  ]
+  def index = { redirect(action: list, params: params) }
+
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def list = {
+    if (!params.max) params.max = 10
+    [trackedIndexInstanceList: TrackedIndex.list(params)]
+  }
+
+  def show = {
+    def trackedIndexInstance = TrackedIndex.get(params.id)
+
+    if (!trackedIndexInstance)
+    {
+      flash.message = "TrackedIndex not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    { return [trackedIndexInstance: trackedIndexInstance] }
+  }
+
+  def delete = {
+    def trackedIndexInstance = TrackedIndex.get(params.id)
+    if (trackedIndexInstance)
+    {
+      trackedIndexInstance.delete()
+      flash.message = "TrackedIndex ${params.id} deleted"
+      redirect(action: list)
+    }
+    else
+    {
+      flash.message = "TrackedIndex not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def edit = {
+    def trackedIndexInstance = TrackedIndex.get(params.id)
+
+    if (!trackedIndexInstance)
+    {
+      flash.message = "TrackedIndex not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      return [trackedIndexInstance: trackedIndexInstance]
+    }
+  }
+
+  def update = {
+    def trackedIndexInstance = TrackedIndex.get(params.id)
+    if (trackedIndexInstance)
+    {
+      trackedIndexInstance.properties = params
+      if (!trackedIndexInstance.hasErrors() && trackedIndexInstance.save())
+      {
+        flash.message = "TrackedIndex ${params.id} updated"
+        redirect(action: show, id: trackedIndexInstance.id)
+      }
+      else
+      {
+        render(view: 'edit', model: [trackedIndexInstance: trackedIndexInstance])
+      }
+    }
+    else
+    {
+      flash.message = "TrackedIndex not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+    }
+  }
+
+  def create = {
+    def trackedIndexInstance = new TrackedIndex()
+    trackedIndexInstance.properties = params
+    return ['trackedIndexInstance': trackedIndexInstance]
+  }
+
+  def save = {
+    def trackedIndexInstance = new TrackedIndex(params)
+    if (!trackedIndexInstance.hasErrors() && trackedIndexInstance.save())
+    {
+      flash.message = "TrackedIndex ${trackedIndexInstance.id} created"
+      redirect(action: show, id: trackedIndexInstance.id)
+    }
+    else
+    {
+      render(view: 'create', model: [trackedIndexInstance: trackedIndexInstance])
+    }
+  }
+}

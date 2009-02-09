@@ -1,0 +1,35 @@
+<div class="summaryData">
+  <div id="offerSummary" class="span-24 last">
+    <div class="summaryHeading span-24 last"><g:message code="offer.summaryHeading"/></div>
+    <div id="leftColumn" class="span-11 colborder">
+      <div id="typeBox">
+        <g:acigOutputValue id="offer.offerId" type="STRING" label="offer.offerId" value="${offer.offerId}"/>
+        <g:acigOutputValue id="offer.assetClass" type="ENUM" label="offer.assetClass" value="${offer.assetClass}"/>
+        <g:acigOutputValue id="offer.type" type="ENUM" label="offer.type" value="${offer.type}"/>
+        <g:acigOutputValue id="offer.subType" type="ENUM" label="offer.subType" value="${offer.subType}"/>
+      </div>
+      <div>
+        <g:render id="offerRight" template="/shared/offerRight" model="[offer:offer]"/>
+      </div>
+      <div>
+        <g:render id="currentBids" template="/shared/currentBids" model="[currentBids:currentBids]"/>
+      </div>
+    </div>
+    <div id="rightColumn" class="span-11 last">
+      <div id="offerData1r">
+        <g:if test="${offer?.currentContractAmt?.floatValue() > 0 &&  userInstance?.bidders?.size() > 0  && offer?.bidOpenDate <= new Date() && offer?.bidCloseDate >= new Date() && offer?.status == 'OPEN'}">
+          <g:link controller="bid" class="button" action="create" params="[offerId:offer.id]"><g:message code="offer.createBid"/></g:link>
+        </g:if>
+        <g:else>&nbsp;</g:else>
+        <a class="button" href="<g:createLink class="button" action='circular' controller='offer' id='${offer.id}'/>" target='_blank'>
+          <g:message code="offer.readCircular"/>
+        </a>
+        <div>&nbsp;</div>
+        <g:acigOutputValue id="offer.bidOpen" type="DATE" label="offer.bidOpenDate" value="${offer.bidOpenDate}"/>
+        <g:acigOutputValue id="offer.bidClose" type="DATE" label="offer.bidCloseDate" value="${offer.bidCloseDate}"/>
+        <g:acigOutputValue id="offer.status" type="ENUM" label="offer.status" value="${offer.status}"/>
+      </div>
+      <g:render id="portfolioMetrics" template="/shared/portfolioMetrics" model="[offer:offer]"/>
+    </div>
+  </div>
+</div>

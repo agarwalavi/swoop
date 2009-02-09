@@ -1,0 +1,218 @@
+/*
+ * Licensed to Soaring Eagle L.L.C. under one or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information regarding copyright ownership.  Soaring Eagle L.L.C.
+ * licenses this file to you under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ * Email Contact Scott Ryan scott@theryansplace.com
+ */
+
+class UserController extends BaseController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN, Role.AXS_USER],
+          delete: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN, Role.AXS_USER],
+          update: [Role.MASTER_ADMIN, Role.AXS_USER],
+          create: [Role.MASTER_ADMIN],
+          save: [Role.MASTER_ADMIN],
+          myProfile: [Role.MASTER_ADMIN, Role.AXS_USER]
+  ]
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def index = {
+    redirect(action: list, params: params)
+  }
+
+  def list = {
+    if (!params.max)
+    {
+      params.max = 10
+    }
+    [personList: User.list(params)]
+  }
+
+  def show = {
+    [person: User.get(params.id)]
+  }
+
+  /**
+   * Person delete action. Before removing an existing person,
+   * he should be removed from those authorities which he is involved.
+   */
+  def delete = {
+    def person = User.get(params.id)
+    // TODO don't remove admin
+    if (person)
+    {
+      def authPrincipal = authenticateService.principal()
+      //avoid self-delete if the logged-in user is an admin
+      if (!(authPrincipal instanceof String) && authPrincipal.username == person.username)
+      {
+        flash.message = "You can not delete yourself, please login as another admin and try again"
+      }
+      else
+      {
+        //first, delete this person from People_Authorities table.
+        Role.findAll().each { it.removeFromPeople(person) }
+        person.enabled = false
+        flash.message = "User ${params.id} deleted."
+      }
+    }
+    else
+    {
+      flash.message = "User not found with id ${params.id}"
+    }
+
+    redirect(action: list)
+  }
+
+  def edit = {
+    def person = User.get(params.id)
+    // Make sure we can edit this person
+    if (ifNotGranted(Role.MASTER_ADMIN))
+    {
+      def origPerson = User.findByUsername(authenticateService.principal().getUsername())
+      // Make sure we have a match to id that is logged in
+      if (origPerson.id != person.id)
+      {
+        flash.error = "You are not allowed to edit this user"
+        redirect(controller: 'home')
+        return
+      }
+    }
+
+    person.confirmPassword = person.passwd
+    if (!person)
+    {
+      flash.message = "User not found with id ${params.id}"
+      redirect(action: list)
+      return
+    }
+    // TODO manage bidder list by affiliate
+    [person: person, authorityList: Role.list(params), bidderList: Bidder.list(params)]
+  }
+
+  /**
+   * Person update action.
+   */
+  def update = {
+    def person = User.get(params.id)
+    if (!person)
+    {
+      flash.message = "User not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+      return
+    }
+    def oldPassword = person.passwd
+    // make sure confirm passwords match
+    if (params.confirmPassword == null || params.confirmPassword.length() == 0 || params.confirmPassword != params.passwd)
+    {
+      flash.error = "Confirm password must be the same as the password"
+      redirect(action: edit, id: params.id)
+      return
+    }
+    if (ifNotGranted(Role.MASTER_ADMIN))
+    {
+      def origPerson = User.findByUsername(authenticateService.principal().getUsername())
+      // Make sure we have a match to id that is logged in
+      if (origPerson.id != person.id)
+      {
+        flash.error = "You are not allowed to edit this user"
+        redirect(controller: 'home')
+        return
+      }
+      // Copy Enabled
+      person.enabled = origPerson.enabled
+
+      // roles stay the same
+    }
+    person.properties = params
+    if (!params.passwd.equals(oldPassword))
+    {
+      person.passwd = authenticateService.passwordEncoder(params.passwd)
+    }
+    if (!person.hasErrors() && person.save())
+    {
+      if (ifAnyGranted(Role.MASTER_ADMIN))
+      {
+        Role.findAll().each { it.removeFromPeople(person) }
+        addRoles(person)
+      }
+      redirect(action: show, id: person.id)
+    } else
+    {
+      render(view: 'edit', model: [person: person])
+    }
+  }
+
+  def create = {
+    def person = new User()
+    person.properties = params
+    [person: person, authorityList: Role.list(params), bidderList: Bidder.list(params)]
+  }
+
+
+
+  /**
+   * Person save action.
+   */
+  def save = {
+    def person = new User()
+
+    person.properties = params
+    // make sure confirm passwords match
+    if (person.confirmPassword == null || person.confirmPassword.length() == 0 || person.confirmPassword != person.passwd)
+    {
+      flash.error = "Confirm password must be the same as the password"
+      render(view: 'create', model: [authorityList: Role.list(params), person: person, bidderList: Bidder.list(params)])
+      return
+    }
+    person.passwd = authenticateService.passwordEncoder(params.passwd)
+    if (!person.hasErrors() && person.save())
+    {
+      if (ifAnyGranted(Role.MASTER_ADMIN))
+      {
+        addRoles(person)
+        addBidders(person)
+      }
+      redirect(action: show, id: person.id)
+    }
+    else
+    {
+      render(view: 'create', model: [authorityList: Role.list(params), person: person], bidderList: Bidder.list(params))
+    }
+  }
+  def myProfile = {
+    def person = User.findByUsername(authenticateService.principal().getUsername())
+
+    if (!person)
+    {
+      flash.message = "User not found with id ${params.id}"
+      redirect(action: list)
+      return
+    }
+    person.confirmPassword = person.passwd
+    // TODO manage bidder list by affiliate
+    render(view: 'edit', model: [person: person, authorityList: Role.list(params), bidderList: Bidder.list(params)])
+  }
+
+  private void addRoles(person)
+  {
+    for (String key in params.keySet())
+    {
+      if (key.contains('ROLE') && 'on' == params.get(key))
+      {
+        Role.findByAuthority(key).addToPeople(person)
+      }
+    }
+  }
+}

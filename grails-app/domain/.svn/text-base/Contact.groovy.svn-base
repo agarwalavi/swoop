@@ -1,0 +1,20 @@
+class Contact implements Serializable
+{
+  static constraints =
+  {
+    firstName(nullable: false, blank: false, maxSize: 100)
+    lastName(nullable: false, blank: false, maxSize: 100)
+    title(nullable: true, blank: true, maxSize: 100)
+    phone(nullable: false, blank: false, maxSize: 25)
+    mobilePhone(nullable: true, blank: true, maxSize: 25)
+    emailAddress(nullable: false, blank: false, maxSize: 255, email: true)
+    fax(nullable: true, blank: true, maxSize: 25)
+  }
+  String firstName
+  String lastName
+  String title
+  String phone
+  String mobilePhone
+  String emailAddress
+  String fax
+}

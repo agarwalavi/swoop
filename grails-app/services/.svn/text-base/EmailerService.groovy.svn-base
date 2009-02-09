@@ -1,0 +1,122 @@
+import javax.mail.MessagingException
+
+import org.springframework.mail.MailException
+import org.springframework.mail.MailSender
+import org.springframework.mail.SimpleMailMessage
+import com.acig.acigweb.reference.PropertyCodes
+
+
+/**
+ * Simple service for sending emails.
+ *
+ * Work is planned in the Grails roadmap to implement first-class email
+ * support, so there's no point in making this code any more sophisticated.
+ *
+ * @author Haotian Sun
+ */
+class EmailerService
+{
+  boolean transactional = false
+  def mailService
+  MailSender mailSender
+  SimpleMailMessage mailMessage // a "prototype" email instance
+
+  /**
+   * Send a list of emails
+   *
+   * @param mails a list of maps
+   */
+  def sendEmails(mails)
+  {
+
+    // Build the mail messages
+    def messages = []
+    for (mail in mails)
+    {
+      // Create a thread safe "sandbox" of the message
+      SimpleMailMessage message = new SimpleMailMessage(mailMessage)
+      message.to = mail.to
+      message.text = mail.text
+      message.subject = mail.subject
+      messages << message
+    }
+    // Send them all together
+    try
+    {
+      log.debug "about to send ${messages.size()} messages to:\n${messages.to.join('\n')}"
+      mailSender.send(messages as SimpleMailMessage[])
+    }
+    catch (MailException e)
+    {
+      log.error "Failed to send emails", e
+    }
+    catch (MessagingException e)
+    {
+      log.error "Failed to send emails", e
+    }
+  }
+
+  def sendEmail(String inSubjectLineKey, String inMessageKey, Affiliate inAffiliate, List inPlaceHolders, def inObject, String inAddress, def inFlash)
+  {
+    String subjectLine
+    String message
+    String fromAddressBackupKey = PropertyCodes.BID_EMAIL_FROM_ADDRESS
+    String fromAddressKey = PropertyCodes.BID_EMAIL_FROM_ADDRESS + "." + inAffiliate.id
+    String fromAddress = Setting.valueFor(fromAddressKey)
+    if (fromAddress == null || fromAddress.length() == 0)
+    {
+      fromAddress = Setting.valueFor(fromAddressBackupKey)
+    }
+
+    if (fromAddress == null)
+    {
+      inFlash.error = "No From Address Defined"
+      log.error "From Address " + fromAddressKey + "or " + fromAddressBackupKey + "  is not defined. "
+    }
+    // Get the subject line
+    def results = TextTemplate.createCriteria().list {
+      and {
+        eq("code", inSubjectLineKey)
+        eq("affiliate", inAffiliate)
+      }
+    }
+    if (results == null || results.size() == 0)
+    {
+      subjectLine = "No template at " + inSubjectLineKey + " for affiliate " + inAffiliate.companyName
+      inFlash.error = "No template at " + inSubjectLineKey + " for affiliate " + inAffiliate.companyName
+    }
+    else
+    {
+      subjectLine = results.get(0).text
+    }
+    PlaceHolderProcessor processor = new PlaceHolderProcessor()
+    subjectLine = processor.processPlaceHolders(inObject, inPlaceHolders, subjectLine)
+    // Handle the message text
+    results = TextTemplate.createCriteria().list {
+      and {
+        eq("code", inMessageKey)
+        eq("affiliate", inAffiliate)
+      }
+    }
+    if (results == null || results.size() == 0)
+    {
+      message = "No template at " + inMessageKey + " for affiliate " + inAffiliate.companyName
+      inFlash.error = "No template at " + inMessageKey + " for affiliate " + inAffiliate.companyName
+    }
+    else
+    {
+      message = results.get(0).text
+    }
+
+    message = processor.processPlaceHolders(inObject, inPlaceHolders, message)
+
+    log.debug " Sending the following " + "From Address " + fromAddress + " email " + inAddress + " subject Line " + subjectLine + " message " + message
+    // Send admin email
+    mailService.sendMail {
+      to inAddress
+      from fromAddress
+      subject subjectLine
+      html message
+    }
+  }
+}

@@ -1,0 +1,27 @@
+/**
+ * Role class for Authority.
+ */
+class Role extends BaseDomain implements Serializable
+{
+  static constraints = {
+    authority(nullable: false, blank: false, maxSize: 100)
+    description(nullable: false, blank: false, maxSize: 100)
+  }
+  static belongsTo = User
+  static hasMany = [people: User]
+  static mapping = {
+    // This is reversed on purpose to support grails 1.0.4 mapping bug
+    people(column: 'role_id')
+  }
+  /** description               */
+  String description
+  /** ROLE String               */
+  String authority = 'ROLE_'
+
+  static final ANONYMOUS = 'IS_AUTHENTICATED_ANONYMOUSLY'
+  static final MASTER_ADMIN = 'ROLE_MASTER_ADMIN'
+  static final AXS_USER = 'ROLE_AXS_USER'
+
+  static final ALL_ROLES = [Role.MASTER_ADMIN, Role.AXS_USER]
+  static final ADMIN_ROLES = [Role.MASTER_ADMIN]
+}

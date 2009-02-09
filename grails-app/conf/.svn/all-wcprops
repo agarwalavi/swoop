@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/cmmc/!svn/ver/199/trunk/acig/acigweb/grails-app/conf
+END
+SecurityConfig.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/cmmc/!svn/ver/161/trunk/acig/acigweb/grails-app/conf/SecurityConfig.groovy
+END
+BootStrap.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/cmmc/!svn/ver/199/trunk/acig/acigweb/grails-app/conf/BootStrap.groovy
+END
+SecurityFilters.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/cmmc/!svn/ver/162/trunk/acig/acigweb/grails-app/conf/SecurityFilters.groovy
+END
+UrlMappings.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/cmmc/!svn/ver/123/trunk/acig/acigweb/grails-app/conf/UrlMappings.groovy
+END
+Config.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/cmmc/!svn/ver/123/trunk/acig/acigweb/grails-app/conf/Config.groovy
+END
+DataSource.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/cmmc/!svn/ver/191/trunk/acig/acigweb/grails-app/conf/DataSource.groovy
+END

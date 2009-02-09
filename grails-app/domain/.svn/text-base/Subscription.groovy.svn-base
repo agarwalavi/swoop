@@ -1,0 +1,25 @@
+class Subscription extends BaseDomain implements Serializable
+{
+  static transients = ['currentSummary', 'pastSummary', 'deltaSummary','selected']
+  static contraints = {
+    offer(nullable: false)
+    bidder(nullable: false)
+    effectiveDate(nullable: false)
+    settlementDate(nullable: true)
+    ownershipPct(nullable: false)
+    couponPct(nullable: false)
+    enabled(nullable: false)
+  }
+  def belongsTo = [Offer]
+  Offer offer
+  Bidder bidder
+  Date effectiveDate
+  Date settlementDate
+  BigDecimal ownershipPct
+  BigDecimal couponPct
+  Boolean enabled = true
+  SubscriptionReportSummary currentSummary
+  SubscriptionReportSummary pastSummary
+  SubscriptionReportSummary deltaSummary
+  Boolean selected
+}

@@ -1,0 +1,13 @@
+public class BidderRating extends BaseDomain implements Serializable
+{
+  static constraints = {
+    user(nullable: false, unique: ['bidder'])
+    bidder(nullable: false)
+    rating(nullable: false, range: 1..5, scale: 0)
+    comment(nullable: true, blank: true, maxSize: 255)
+  }
+  User user
+  Bidder bidder
+  BigDecimal rating
+  String comment
+}

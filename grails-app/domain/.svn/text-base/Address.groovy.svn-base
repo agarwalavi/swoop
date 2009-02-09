@@ -1,0 +1,16 @@
+class Address implements Serializable
+{
+  static constraints =
+  {
+    addressLineOne(nullable: false, blank: false, maxSize: 100)
+    addressLineTwo(nullable: true, blank: true, maxSize: 100)
+    city(nullable: false, blank: false, maxSize: 100)
+    province(nullable: false)
+    postalCode(nullable: false, blank: false, maxSize: 25)
+  }
+  String addressLineOne
+  String addressLineTwo
+  String city
+  Province province
+  String postalCode
+}

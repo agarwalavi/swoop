@@ -1,0 +1,31 @@
+import com.acig.acigweb.reference.BidStatusType
+
+class Bid extends BaseDomain implements Serializable
+{
+  static transients = ["pendingAmt", "myBid"]
+
+  static constraints = {
+    user(nullable: false)
+    bidder(nullable: false)
+    pricePct(nullable: false, scale: 2)
+    couponPct(nullable: false, scale: 2, range: 0..100)
+    amt(nullable: false, scale: 2)
+    awardedAmt(nullable: true, scale: 2)
+    offer(nullable: false)
+    status(nullable: false, blank: false, inList: BidStatusType.getList(), maxSize: 255)
+    readCircular(nullable: false)
+    notes(nullable: true, blank: true, maxSize: 255)
+  }
+  User user
+  Bidder bidder
+  BigDecimal pricePct
+  BigDecimal couponPct
+  BigDecimal amt
+  BigDecimal awardedAmt
+  Offer offer
+  String status
+  Boolean readCircular
+  Boolean myBid = false
+  BigDecimal pendingAmt
+  String notes
+}

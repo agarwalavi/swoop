@@ -1,0 +1,104 @@
+class AffiliateController extends BaseController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN],
+          delete: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN],
+          update: [Role.MASTER_ADMIN],
+          create: [Role.MASTER_ADMIN],
+          save: [Role.MASTER_ADMIN]
+  ]
+  def index = { redirect(action: list, params: params) }
+
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def list = {
+    if (!params.max) params.max = 10
+    [affiliateInstanceList: Affiliate.list(params)]
+  }
+
+  def show = {
+    def affiliateInstance = Affiliate.get(params.id)
+
+    if (!affiliateInstance)
+    {
+      flash.message = "Affiliate not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    { return [affiliateInstance: affiliateInstance] }
+  }
+
+  def delete = {
+    def affiliateInstance = Affiliate.get(params.id)
+    if (affiliateInstance)
+    {
+      affiliateInstance.enabled = false
+      flash.message = "Affiliate ${params.id} deleted"
+      redirect(action: list)
+    }
+    else
+    {
+      flash.message = "Affiliate not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def edit = {
+    def affiliateInstance = Affiliate.get(params.id)
+
+    if (!affiliateInstance)
+    {
+      flash.message = "Affiliate not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      return [affiliateInstance: affiliateInstance]
+    }
+  }
+
+  def update = {
+    def affiliateInstance = Affiliate.get(params.id)
+    if (affiliateInstance)
+    {
+      affiliateInstance.properties = params
+      if (!affiliateInstance.hasErrors() && affiliateInstance.save())
+      {
+        flash.message = "Affiliate ${params.id} updated"
+        redirect(action: show, id: affiliateInstance.id)
+      }
+      else
+      {
+        render(view: 'edit', model: [affiliateInstance: affiliateInstance])
+      }
+    }
+    else
+    {
+      flash.message = "Affiliate not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+    }
+  }
+
+  def create = {
+    def affiliateInstance = new Affiliate()
+    affiliateInstance.properties = params
+    return ['affiliateInstance': affiliateInstance]
+  }
+
+  def save = {
+    def affiliateInstance = new Affiliate(params)
+    if (!affiliateInstance.hasErrors() && affiliateInstance.save())
+    {
+      flash.message = "Affiliate ${affiliateInstance.id} created"
+      redirect(action: show, id: affiliateInstance.id)
+    }
+    else
+    {
+      render(view: 'create', model: [affiliateInstance: affiliateInstance])
+    }
+  }
+}

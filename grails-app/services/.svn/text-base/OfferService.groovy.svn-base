@@ -1,0 +1,334 @@
+import com.acig.acigweb.util.DateUtils
+import com.acig.acigweb.reference.OfferStatusType
+import com.acig.acigweb.reference.OfferType
+import com.acig.acigweb.reference.OfferSubType
+import com.acig.acigweb.reference.AssetClassType
+import com.acig.acigweb.reference.PlaceHolderType
+import com.acig.acigweb.reference.TopObjectType
+import com.acig.acigweb.reference.TextCodes
+import com.acig.acigweb.reference.TextTemplateType
+import com.acig.acigweb.reference.PlaceHolderType
+
+
+class OfferService
+{
+  boolean transactional = true
+
+  def serviceMethod()
+  {
+  }
+
+  def calculateOfferStatistics(Offer inOffer)
+  {
+    if (inOffer.assetClass == AssetClassType.AUTO.name())
+    {
+      // TODO State Concentration
+      def stateConcentration = [:]
+      long newCount = 0;
+      // Get the details for the offer and process them all
+      def details = AutoOfferDetail.findAllByOffer(inOffer)
+      BigDecimal totalFico = new BigDecimal("0")
+      BigDecimal minFico = new BigDecimal("0")
+      BigDecimal maxFico = new BigDecimal("0")
+      BigDecimal totalLoanAmount = new BigDecimal("0")
+      BigDecimal minLoanAmount = new BigDecimal("0")
+      BigDecimal maxLoanAmount = new BigDecimal("0")
+      BigDecimal minLoanBalance = new BigDecimal("0")
+      BigDecimal maxLoanBalance = new BigDecimal("0")
+      BigDecimal totalLoanBalance = new BigDecimal("0")
+      // These will be used to calculate th weighted averages
+      BigDecimal runningFico = new BigDecimal("0")
+      BigDecimal runningApr = new BigDecimal("0")
+      BigDecimal runningLoanAmount = new BigDecimal("0")
+      BigDecimal runningTerm = new BigDecimal("0")
+      BigDecimal runningMonthsRemaining = new BigDecimal("0")
+      BigDecimal runningLoanBalance = new BigDecimal("0")
+      BigDecimal runningPayment = new BigDecimal("0")
+
+      long loanCount = 0
+      details.each {
+        // State Concentration
+        def entry = stateConcentration[it.state]
+        if (entry == null)
+        {
+          stateConcentration[it.state] = new BigDecimal("1")
+        }
+        else
+        {
+          stateConcentration[it.state] = entry.add(new BigDecimal("1"))
+        }
+        // New Used Count
+        if (it.newAuto)
+        {
+          newCount++
+        }
+        // Running Term
+        if (it.term != null)
+        {
+          runningTerm = runningTerm.add(it.currentBalance.multiply(it.term))
+        }
+        // Running Rate
+        if (it.currentBalance != null)
+        {
+          if (loanCount == 1)
+          {
+            minLoanBalance = it.currentBalance
+            maxLoanBalance = it.currentBalance
+          }
+          else
+          {
+            if (it.currentBalance.compareTo(minLoanBalance) == -1)
+            {
+              minLoanBalance = it.currentBalance
+            }
+            if (it.currentBalance.compareTo(maxLoanBalance) == 1)
+            {
+              maxLoanBalance = it.currentBalance
+            }
+          }
+          runningLoanBalance = runningLoanBalance.add(it.currentBalance.multiply(it.currentBalance))
+        }
+        if (it.rate != null)
+        {
+          runningApr = runningApr.add(it.currentBalance.multiply(it.rate))
+        }
+        if (it.originationAmount != null)
+        {
+          runningLoanAmount = runningLoanAmount.add(it.currentBalance.multiply(it.originationAmount))
+        }
+        if (it.monthsRemaining != null)
+        {
+          runningMonthsRemaining = runningMonthsRemaining.add(it.currentBalance.multiply(it.monthsRemaining))
+        }
+        if (it.payment != null)
+        {
+          runningPayment = runningPayment.add(it.currentBalance.multiply(it.payment))
+        }
+        loanCount++
+        if (it.fico != null)
+        {
+          totalFico = totalFico.add(it.fico)
+          runningFico = runningFico.add(it.currentBalance.multiply(it.fico))
+          if (loanCount == 1)
+          {
+            minFico = it.fico
+            maxFico = it.fico
+          }
+          else
+          {
+            if (it.fico.compareTo(minFico) == -1)
+            {
+              minFico = it.fico
+            }
+            if (it.fico.compareTo(maxFico) == 1)
+            {
+              maxFico = it.fico
+            }
+          }
+        }
+        if (it.originationAmount != null)
+        {
+          totalLoanAmount = totalLoanAmount.add(it.originationAmount)
+          if (loanCount == 1)
+          {
+            minLoanAmount = it.originationAmount
+            maxLoanAmount = it.originationAmount
+          }
+          else
+          {
+            if (it.originationAmount.compareTo(minLoanAmount) == -1)
+            {
+              minLoanAmount = it.originationAmount
+            }
+            if (it.originationAmount.compareTo(maxLoanAmount) == 1)
+            {
+              maxLoanAmount = it.originationAmount
+            }
+          }
+        }
+        if (it.currentBalance != null)
+        {
+          totalLoanBalance = totalLoanBalance.add(it.currentBalance)
+        }
+      }
+      if (loanCount > 0)
+      {
+        inOffer.avgNewPct = (newCount / loanCount) * 100
+        inOffer.avgUsedPct = ((loanCount - newCount) / loanCount) * 100
+        inOffer.minFico = minFico
+        inOffer.maxFico = maxFico
+        inOffer.loanCount = loanCount
+        inOffer.minLoanAmt = minLoanAmount
+        inOffer.maxLoanAmt = maxLoanAmount
+        inOffer.minLoanBalanceAmt = minLoanBalance
+        inOffer.maxLoanBalanceAmt = maxLoanBalance
+        inOffer.currentContractAmt = totalLoanBalance
+        inOffer.originalContractAmt = totalLoanAmount
+        inOffer.participationAmt = totalLoanBalance.multiply(inOffer.participationPct.divide(new BigDecimal("100"), BigDecimal.ROUND_UP))
+        inOffer.minSubscriptionAmt = inOffer.participationAmt.multiply(inOffer.minSubscriptionPct.divide(new BigDecimal("100"), BigDecimal.ROUND_UP))
+        inOffer.maxSubscriptionAmt = inOffer.participationAmt.multiply(inOffer.maxSubscriptionPct.divide(new BigDecimal("100"), BigDecimal.ROUND_UP))
+        inOffer.fillOrKillAmt = inOffer.participationAmt.multiply(inOffer.fillOrKillPct.divide(new BigDecimal("100"), BigDecimal.ROUND_UP))
+        if (inOffer.expectedCumulativeLossPct.floatValue() != 0)
+        {
+          inOffer.lossCoverage = inOffer.subordinationPct.divide(inOffer.expectedCumulativeLossPct, BigDecimal.ROUND_UP)
+        }
+        // Handle Weighted Averages here
+        if (totalLoanBalance?.floatValue() > 0)
+          inOffer.avgFico = runningFico.divide(totalLoanBalance, BigDecimal.ROUND_UP)
+        // Average APR
+        inOffer.avgAPRPct = runningApr.divide(totalLoanBalance, BigDecimal.ROUND_UP)
+        // Average Loan Amount
+        inOffer.avgLoanAmt = runningLoanAmount.divide(totalLoanBalance, BigDecimal.ROUND_UP)
+        // Average Term
+        inOffer.avgTerm = runningTerm.divide(totalLoanBalance, BigDecimal.ROUND_UP)
+        // Average Months Remaining
+        inOffer.avgMonthsRemaining = runningMonthsRemaining.divide(totalLoanBalance, BigDecimal.ROUND_UP)
+        // Average loan Balance
+        inOffer.avgLoanBalanceAmt = runningLoanBalance.divide(totalLoanBalance, BigDecimal.ROUND_UP)
+        // Average Payment
+        inOffer.avgPaymentAmt = runningPayment.divide(totalLoanBalance, BigDecimal.ROUND_UP)
+        // Calculate the percentage
+        BigDecimal other = (new BigDecimal("0")).setScale(2)
+        def stateCount = 0
+        String stateString
+        //delete all state concentrations
+        OfferState.executeUpdate("delete from OfferState as os where os.offer = :theOffer", [theOffer: inOffer])
+        stateConcentration.each {key, value ->
+          BigDecimal percent = new BigDecimal("0").setScale(2)
+          BigDecimal newValue = new BigDecimal(value).setScale(2)
+          BigDecimal count = new BigDecimal(loanCount).setScale(2)
+          percent = (newValue.divide(count, BigDecimal.ROUND_UP)).multiply(new BigDecimal("100"))
+          if (percent > 5)
+          {
+            OfferState state = new OfferState()
+            state.offer = inOffer
+            state.state = key
+            state.percent = percent
+            state.save()
+            // Not first entry so add comma
+            if (stateCount > 0)
+            {
+              stateString = stateString + " ," + key + " (" + percent + "%)"
+            }
+            else
+            {
+              stateString = key + " (" + percent + "%)"
+            }
+            stateCount++
+          }
+          else
+          {
+            other = other + percent
+          }
+        }
+        if (other.floatValue() > 0)
+        {
+          OfferState state = new OfferState()
+          state.offer = inOffer
+          state.state = "Other"
+          state.percent = other
+          state.save()
+        }
+        stateString = stateString + " ," + "Other (" + other + "%)"
+
+        inOffer.stateConcentration = stateString
+      }
+    }// End of handling of Auto Type loans
+    inOffer.save()
+  }
+
+  String getCircular(Offer inOffer, Affiliate inAffiliate)
+  {
+    String circularText = ""
+    String recourseText = ""
+    String circularTextCode = ""
+    String recourseTextCode = ""
+    // Define Circular Text Code
+    if (inOffer.assetClass == AssetClassType.AUTO.name())
+    {
+      if (inOffer.type == OfferType.LOAN_PARTICIPATION.name())
+      {
+        circularTextCode = TextCodes.CIRCULAR_LOAN_PARTICIPATION_TEXT
+        if (inOffer.subType == OfferSubType.NON_RECOURSE.name())
+        {
+          recourseTextCode = TextCodes.CIRCULAR_LOAN_PARTICIPATION_NON_RECOURSE_TEXT
+        }
+        else if (inOffer.subType == OfferSubType.FULL_RECOURSE.name())
+        {
+          recourseTextCode = TextCodes.CIRCULAR_LOAN_PARTICIPATION_FULL_RECOURSE_TEXT
+        }
+        else if (inOffer.subType == OfferSubType.LIMITED_SUBORDINATION.name())
+          {
+            recourseTextCode = TextCodes.CIRCULAR_LOAN_PARTICIPATION_LIMITED_SUBORDINATION_TEXT
+          }
+      }
+      if (inOffer.type == OfferType.WHOLE_LOAN.name())
+      {
+        circularTextCode = TextCodes.CIRCULAR_WHOLE_LOAN_TEXT
+        if (inOffer.subType == OfferSubType.NON_RECOURSE.name())
+        {
+          recourseTextCode = TextCodes.CIRCULAR_WHOLE_LOAN_NON_RECOURSE_TEXT
+        }
+        else if (inOffer.subType == OfferSubType.FULL_RECOURSE.name())
+        {
+          recourseTextCode = TextCodes.CIRCULAR_WHOLE_LOAN_FULL_RECOURSE_TEXT
+        }
+        else if (inOffer.subType == OfferSubType.LIMITED_SUBORDINATION.name())
+          {
+            recourseTextCode = TextCodes.CIRCULAR_WHOLE_LOAN_LIMITED_SUBORDINATION_TEXT
+          }
+      }
+    }
+    // Get the placeholders
+    List placeholders = PlaceHolder.createCriteria().list {
+      and {
+        eq("placeHolderType", PlaceHolderType.OFFER.name())
+        eq("topObject", TopObjectType.OFFER.name())
+      }
+    }
+    // Get the document text
+    List templates = TextTemplate.createCriteria().list {
+      and {
+        eq("code", circularTextCode)
+        eq("affiliate", inAffiliate)
+      }
+    }
+
+    if (templates == null || templates.size() == 0)
+    {
+      circularText = "No circular template at " + circularTextCode
+    }
+    else
+    {
+      circularText = templates.get(0).text
+    }
+
+    templates = TextTemplate.createCriteria().list {
+      and {
+        eq("code", recourseTextCode)
+        eq("affiliate", inAffiliate)
+      }
+    }
+
+
+    if (templates == null || templates.size() == 0)
+    {
+      recourseText = "no recourse text at " + recourseTextCode
+    }
+    else
+    {
+      resourseText = templates.get(0).text
+    }
+
+    // Replace the circular text with the recourse section
+    circularText?.replaceAll(TextCodes.RECOURSE_DETAIL_PLACEHOLDER, recourseText)
+    // Now process the text
+    if (circularText != null && placeholders != null && placeholders.size() > 0)
+    {
+      PlaceHolderProcessor processor = new PlaceHolderProcessor()
+      circularText = processor.processPlaceHolders(inOffer, placeholders, circularText)
+    }
+
+    return circularText
+  }
+}

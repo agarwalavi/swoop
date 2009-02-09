@@ -1,0 +1,8 @@
+class RateService {
+
+    boolean transactional = true
+
+    def serviceMethod() {
+
+    }
+}

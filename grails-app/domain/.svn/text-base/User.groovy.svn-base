@@ -1,0 +1,59 @@
+/**
+ * User for user account.
+ */
+class User extends BaseDomain implements Serializable
+{
+  static transients = ['pass', 'confirmPassword']
+  static constraints =
+  {
+    username(nullable: false, blank: false, unique: true, maxSize: 100)
+    passwd(nullable: false, blank: false, maxSize: 50)
+    companyName(nullable: true, blank: true, maxSize: 100)
+    mailAddress(nullable: false)
+    contact(nullable: false)
+    affiliate(nullable: false)
+    originator(nullable: true)
+    enabled(nullable: false)
+  }
+  static hasMany = [authorities: Role, bidders: Bidder]
+  static mapping = {
+    // This is reversed on purpose to support grails 1.0.4 mapping bug
+    authorities(column: 'user_id')
+    // This is reversed on purpose to support grails 1.0.4 mapping bug
+    bidders(column: 'user_id')
+  }
+  /** The bidders this user represents                   */
+  def belongsTo = Bidder
+  /** The affliate that signed this user up                **/
+  Affiliate affiliate
+  /** If the user needs to be associated with an Originator                **/
+  Originator originator
+  static embedded = ['mailAddress', 'contact']
+  /** Username                     */
+  String username
+  /** MD5 Password                     */
+  String passwd
+  /** The mailing address for the user                  */
+  Address mailAddress = new Address()
+  /** The optional company name for the user                  */
+  String companyName
+  /** Common contact information for the user                  */
+  Contact contact = new Contact()
+  /** enabled                     */
+  boolean enabled = true
+  /** plain password to create a MD5 password                     */
+  String pass = '[secret]'
+
+  String confirmPassword
+
+  def getFullName()
+  {
+    contact.firstName + " " + contact.lastName
+  }
+}
+
+
+
+
+
+

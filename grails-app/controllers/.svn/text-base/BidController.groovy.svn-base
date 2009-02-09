@@ -1,0 +1,606 @@
+import com.acig.acigweb.reference.BidStatusType
+import com.acig.acigweb.reference.OfferStatusType
+import com.acig.acigweb.reference.OfferType
+import com.acig.acigweb.reference.TextTemplateType
+import com.acig.acigweb.reference.PlaceHolderType
+import com.acig.acigweb.reference.TopObjectType
+import com.acig.acigweb.reference.TextCodes
+import com.acig.acigweb.reference.PropertyCodes
+import org.jfree.chart.ChartFactory
+import org.jfree.data.general.DefaultPieDataset
+import org.jfree.chart.encoders.EncoderUtil
+import org.jfree.data.category.IntervalCategoryDataset
+import org.jfree.data.gantt.TaskSeries
+import org.jfree.data.gantt.Task;
+import org.jfree.data.time.SimpleTimePeriod
+import org.jfree.data.gantt.TaskSeriesCollection;
+import java.text.SimpleDateFormat;
+
+class BidController extends BaseController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN, Role.AXS_USER],
+          cancel: [Role.MASTER_ADMIN],
+          award: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN],
+          update: [Role.MASTER_ADMIN],
+          create: [Role.MASTER_ADMIN, Role.AXS_USER],
+          save: [Role.MASTER_ADMIN, Role.AXS_USER],
+          activate: [Role.MASTER_ADMIN],
+          deActivate: [Role.MASTER_ADMIN],
+          unAward: [Role.MASTER_ADMIN],
+          bidderSelected: [Role.MASTER_ADMIN, Role.AXS_USER],
+          events: [Role.MASTER_ADMIN, Role.AXS_USER]
+  ]
+  def emailerService
+  def events = {
+    Offer offer = Offer.get(params.id)
+    render(contentType: "text/xml") {
+      data() {
+        String startDate = new SimpleDateFormat("MMM dd yyyy HH:mm:ss", Locale.US).format(offer.bidOpenDate) + " GMT"
+        String endDate = new SimpleDateFormat("MMM dd yyyy HH:mm:ss", Locale.US).format(offer.bidCloseDate) + " GMT"
+        event('start': startDate, 'end': endDate, 'title': "Bid Period", "During this period bids are placed")
+        event('start': endDate, 'title': "Bid Close Date", "Bidding will end and winning bids will be awarded")
+        startDate = new SimpleDateFormat("MMM dd yyyy HH:mm:ss", Locale.US).format(offer.bidCloseDate) + " GMT"
+        endDate = new SimpleDateFormat("MMM dd yyyy HH:mm:ss", Locale.US).format(offer.expectedCloseDate) + " GMT"
+        event('start': startDate, 'end': endDate, 'title': "Due Diligence", "During this period Due Diligence is conducted")
+        if (offer.siteVisitDate != null)
+        {
+          endDate = new SimpleDateFormat("MMM dd yyyy HH:mm:ss", Locale.US).format(offer.siteVisitDate) + " GMT"
+          event('start': endDate, 'title': "Site Visit", "Site Visits is expected to take place")
+        }
+        endDate = new SimpleDateFormat("MMM dd yyyy HH:mm:ss", Locale.US).format(offer.expectedCloseDate) + " GMT"
+        event('start': endDate, 'title': "Expected Close Date", "Funding is expected to take place")
+      }
+    }
+  }
+
+  def bidService
+  def index = { redirect(action: list, params: params) }
+
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def list = {
+    if (!params.max) params.max = 10
+    def bids = Bid.createCriteria().list(params) {
+    }
+    [bidInstanceList: bids]
+  }
+
+  def show = {
+    def bidInstance = Bid.get(params.id)
+
+    if (!bidInstance)
+    {
+      flash.message = "Bid not found with id ${params.id}"
+      redirect(action: list)
+      return
+    }
+    def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    // If we are not the master admin we can only view our own bids
+    if (!ifAnyGranted(Role.MASTER_ADMIN))
+    {
+      if (bidInstance.user.id != userInstance.id)
+      {
+        flash.error = "You can only view your own bids "
+        redirect(controller: 'home')
+        return
+      }
+    }
+
+    def currentBids = bidService.getCurrentBidList(bidInstance.offer, userInstance)
+    return [bidInstance: bidInstance, currentBids: currentBids]
+  }
+
+  def cancel = {
+    def bidInstance = Bid.get(params.id)
+    if (bidInstance)
+    {
+      bidInstance.status = BidStatusType.INACTIVE.name()
+      flash.message = "Bid ${params.id} canceled"
+      try
+      {
+        sendUpdateEmail(bidInstance, flash)
+      }
+      catch (Exception ex)
+      {
+        log.error "Could not send email", ex
+        flash.error = "Bid was inactivated but Notification email was not sent"
+      }
+      redirect(action: list)
+    }
+    else
+    {
+      flash.message = "Bid not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def award = {
+    def bidInstance = Bid.get(params.id)
+    Bid currentBid
+    // Get the current bid status
+    if (bidInstance)
+    {
+      def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+      def currentBids = bidService.getCurrentBidList(bidInstance.offer, userInstance)
+      currentBids.each {
+        if (it.id == bidInstance.id)
+        {
+          currentBid = it
+        }
+      }
+      if (currentBid?.pendingAmt?.floatValue() > 0)
+      {
+        bidInstance.awardedAmt = currentBid.pendingAmt
+        bidInstance.status = BidStatusType.AWARDED.name()
+        if (!bidInstance.hasErrors() && bidInstance.save())
+        {
+          flash.message = "Bid ${params.id} awarded"
+          redirect(action: edit, params: ["id": params.id])
+        }
+        else
+        {
+          flash.error = "Bid ${params.id} could not be awarded"
+          redirect(controller: 'offer', action: 'show', params: ["id": bidInstance.offer.id])
+        }
+      }
+      else
+      {
+        flash.error = "Bid ${params.id} could not be awarded"
+        redirect(controller: 'offer', action: 'show', params: ["id": bidInstance.offer.id])
+      }
+    }
+    else
+    {
+      flash.error = "Bid not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def activate = {
+    def bidInstance = Bid.get(params.id)
+    bidInstance.status = BidStatusType.ACTIVE.name()
+    bidInstance.awardedAmt = new BigDecimal("0")
+    if (!bidInstance.hasErrors() && bidInstance.save())
+    {
+      flash.message = "Bid ${params.id} activated"
+      try
+      {
+        sendUpdateEmail(bidInstance, flash)
+      }
+      catch (Exception ex)
+      {
+        log.error "Could not send email", ex
+        flash.error = "Bid was activated but Notification email was not sent"
+      }
+      redirect(controller: "offer", action: "show", params: ["id": bidInstance.offer.id])
+    }
+    else
+    {
+      flash.error = "Bid ${params.id} could not be activated"
+      redirect(controller: 'offer', action: 'show', params: ["id": bidInstance.offer.id])
+    }
+  }
+
+  def deActivate = {
+    def bidInstance = Bid.get(params.id)
+    bidInstance.status = BidStatusType.INACTIVE.name()
+    bidInstance.awardedAmt = new BigDecimal("0")
+    if (!bidInstance.hasErrors() && bidInstance.save())
+    {
+      flash.message = "Bid ${params.id} deactivated"
+      try
+      {
+        sendUpdateEmail(bidInstance, flash)
+      }
+      catch (Exception ex)
+      {
+        log.error "Could not send email", ex
+        flash.error = "Bid was deactivated but Notification email was not sent"
+      }
+      redirect(controller: "offer", action: "show", params: ["id": bidInstance.offer.id])
+    }
+    else
+    {
+      flash.error = "Bid ${params.id} could not be deactivated"
+      redirect(controller: 'offer', action: 'show', params: ["id": bidInstance.offer.id])
+    }
+  }
+
+  def unAward = {
+    def bidInstance = Bid.get(params.id)
+    bidInstance.status = BidStatusType.ACTIVE.name()
+    bidInstance.awardedAmt = new BigDecimal("0")
+    if (!bidInstance.hasErrors() && bidInstance.save())
+    {
+      flash.message = "Bid ${params.id} unawarded"
+      try
+      {
+        sendUpdateEmail(bidInstance, flash)
+      }
+      catch (Exception ex)
+      {
+        log.error "Could not send email", ex
+        flash.error = "Bid was unawarded but Notification email was not sent"
+      }
+      redirect(controller: "offer", action: "show", params: ["id": bidInstance.offer.id])
+    }
+    else
+    {
+      flash.error = "Bid ${params.id} could not be unawarded"
+      redirect(controller: 'offer', action: 'show', params: ["id": bidInstance.offer.id])
+    }
+  }
+
+  def edit = {
+    def bidInstance = Bid.get(params.id)
+    if (!bidInstance)
+    {
+      flash.message = "Bid not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+      def currentBids = bidService.getCurrentBidList(bidInstance.offer, userInstance)
+      return [bidInstance: bidInstance, currentBids: currentBids]
+    }
+  }
+
+  def update = {
+    def bidInstance = Bid.get(params.id)
+    if (bidInstance)
+    {
+      bidInstance.properties = params
+      // TODO make sure we can't award more than available
+      if (bidInstance.status == BidStatusType.AWARDED.name())
+      {
+        if (bidInstance.awardedAmt == null)
+        {
+          flash.error = "You must enter an awarded amount for any awarded bid"
+          def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+          // def currentBids = bidService.getCurrentBidList(bidInstance.offer, userInstance)
+          def currentBids
+          render(view: 'edit', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+          return
+        }
+        else if (bidInstance.awardedAmt.floatValue() > bidInstance.offer.maxSubscriptionAmt)
+        {
+          flash.error = "The awarded amount must be less than or equal to the Maximum Subscription amount of " + bidInstance.offer.maxSubscriptionAmt
+          def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+          // def currentBids = bidService.getCurrentBidList(bidInstance.offer, userInstance)
+          def currentBids
+          render(view: 'edit', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+          return
+        }
+      }
+      if (!bidInstance.hasErrors() && bidInstance.save())
+      {
+        try
+        {
+          sendUpdateEmail(bidInstance, flash)
+        }
+        catch (Exception ex)
+        {
+          log.error "Could not send email", ex
+          flash.error = "Bid was updated but Notification email was not sent"
+        }
+        flash.message = "Bid ${params.id} updated"
+        redirect(action: show, id: bidInstance.id)
+      }
+      else
+      {
+        render(view: 'edit', model: [bidInstance: bidInstance])
+      }
+    }
+    else
+    {
+      flash.message = "Bid not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+    }
+  }
+
+  def create = {
+    // TODO make sure we can bid on this offer based on date range, affiliate, bidder assigned and offer status
+    def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    def bidInstance = new Bid()
+    bidInstance.properties = params
+    def offerId = params.offerId
+    if (offerId != null && offerId.length() > 0)
+    {
+      def offer = Offer.get(offerId)
+      bidInstance.offer = offer
+    }
+    else
+    {
+      // This should never happen but need to account for it
+      flash.message = "Error passing offer id to Bid creation"
+      redirect(controller: home)
+      return
+    }
+    // Assign min subscription amount and max coupon
+    bidInstance.couponPct = bidInstance.offer.maxCouponPct
+    bidInstance.amt = bidInstance.offer.minSubscriptionAmt
+    def currentBids = bidService.getCurrentBidList(bidInstance.offer, userInstance)
+    return ['bidInstance': bidInstance, 'currentBids': currentBids, 'userInstance': userInstance]
+  }
+
+  def save = {
+    // TODO make sure we can bid on this offer based on date range, affiliate, bidder assigned and offer status
+    def bidInstance = new Bid(params)
+    def principal = authenticateService.principal()
+    def userInstance = User.findByUsername(principal.getUsername())
+
+    // Check the bid data
+    String offerType = bidInstance?.offer?.type
+    Offer offer = bidInstance.offer
+    Date now = new Date()
+    def currentBids = bidService.getCurrentBidList(bidInstance.offer, User.findByUsername(authenticateService.principal().getUsername()))
+
+    // Make sure bid date range is valid and bid is still open
+    if (offer.bidOpenDate > now || offer.bidCloseDate <= now || offer.status != OfferStatusType.OPEN.name())
+    {
+      flash.error = "Offer is no longer accepting bids"
+      render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+      return
+    }
+    if (offerType.equalsIgnoreCase(OfferType.WHOLE_LOAN.name()))
+    {
+      // Make sure bid price is greater than or equal to the offer minimum price
+      bidInstance.couponPct = bidInstance.offer.maximumCouponPct
+      if (bidInstance?.pricePct == null || bidInstance?.pricePct?.floatValue() < 0 || bidInstance?.pricePct?.floatValue() < bidInstance?.offer?.minPricePct?.floatValue())
+      {
+        flash.error = "Bid price must be greater 0 and greater than or equal to the minimum bid price ${bidInstance?.offer?.minPricePct?.floatValue()}"
+        render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+        return
+      }
+    }
+    else
+    {
+      bidInstance.pricePct = bidInstance?.offer?.minPricePct
+      // Make sure bid coupon is less than or equal to offer maximum coupon
+      if (bidInstance?.couponPct == null || bidInstance?.couponPct?.floatValue() < 0.0 || bidInstance?.couponPct?.floatValue() > bidInstance?.offer?.maxCouponPct?.floatValue())
+      {
+        flash.error = "Coupon must be greater than zero and less than the maximum coupon ${bidInstance?.offer?.maxCouponPct}"
+        render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+        return
+      }
+    }
+    // Make sure the bid amount was greater than minimum amount
+    if (bidInstance?.amt?.floatValue() < 0.0 || bidInstance?.amt?.floatValue() < bidInstance?.offer?.minSubscriptionAmt?.floatValue())
+    {
+      flash.error = "Amount must be greater than 0 and greater than or equal to the minimum Amount ${bidInstance?.offer?.minSubscriptionAmt}"
+      render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+      return
+    }
+    // Make sure bid amount was less than maximum purchase amount
+    if (bidInstance?.amt?.floatValue() < 0.0 || bidInstance?.amt?.floatValue() > bidInstance?.offer?.maxSubscriptionAmt?.floatValue())
+    {
+      flash.error = "Amount must be greater than 0 and less than or equal to the maximum Amount ${bidInstance?.offer?.maxSubscriptionAmt}"
+      render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+      return
+    }
+    // Make sure amount is based on the specified increment
+    if (bidInstance.amt.minus(bidInstance.offer.minSubscriptionAmt).remainder(bidInstance.offer.amountIncrement) != 0)
+    {
+      flash.error = "Amount must be an even increment of ${bidInstance.offer.amountIncrement} above the Minimum Subscription amount ${bidInstance?.offer?.minSubscriptionAmt}"
+      render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+      return
+    }
+
+    // Make sure the coupon is based on the specificed increment
+    if (bidInstance.offer.maxCouponPct.minus(bidInstance.couponPct).remainder(bidInstance.offer.couponIncrement) != 0)
+    {
+      flash.error = "Amount must be an even increment of ${bidInstance.offer.couponIncrement} below the Maximum Coupon percent ${bidInstance?.offer?.maxCouponPct}"
+      render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+      return
+    }
+    // Make sure they checked the circular
+    if (bidInstance.readCircular != true)
+    {
+      flash.error = "The flag indicating the Offer Circular was read must be checked"
+      render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+      return
+    }
+    // Set bidder and bid creation user
+    if (bidInstance.bidder == null)
+    {
+      flash.error = "Please select a bidder"
+      render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+      return
+    }
+    boolean validBidder = bidService.validBidder(userInstance, bidInstance.bidder)
+    if (!validBidder)
+    {
+      flash.error = "You are not authorized to make bids on the behalf of this bidder"
+      render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+      return
+    }
+
+    bidInstance.bidder = bidInstance.bidder
+    bidInstance.user = userInstance
+    // Set the status
+    bidInstance.status = BidStatusType.ACTIVE.name()
+    if (!bidInstance.hasErrors() && bidInstance.save())
+    {
+      // Send Emails
+      try
+      {
+        sendCreateEmail(bidInstance, userInstance)
+      }
+      catch (Exception ex)
+      {
+        log.error "Could not send email", ex
+        flash.error = "Bid was created but Notification email was not sent"
+      }
+
+      // bid is saved so update the seeding
+      currentBids = bidService.getCurrentBidList(bidInstance.offer, User.findByUsername(authenticateService.principal().getUsername()))
+      flash.message = "Bid ${bidInstance.id} created"
+      redirect(action: show, id: bidInstance.id)
+      return
+    }
+    else
+    {
+      render(view: 'create', model: [bidInstance: bidInstance, currentBids: currentBids, userInstance: userInstance])
+    }
+  }
+  // Internal method
+  def sendCreateEmail(Bid inBid, User inUser)
+  {
+    String userSubjectLine
+    String adminSubjectLine
+    String userBidText
+    String adminBidText
+    String userSubjectLineCode = TextCodes.BID_CREATE_USER_EMAIL_SUBJECT
+    String userTextCode = TextCodes.BID_CREATE_USER_EMAIL_TEXT
+    String adminSubjectLineCode = TextCodes.BID_CREATE_ADMIN_EMAIL_SUBJECT
+    String adminTextCode = TextCodes.BID_CREATE_ADMIN_EMAIL_TEXT
+    // Get the templates from the database
+    // User Subject Line
+    List results = TextTemplate.createCriteria().list {
+      and {
+        eq("code", userSubjectLineCode)
+        eq("affiliate", inUser.affiliate)
+      }
+    }
+
+
+    if (results == null || results.size() == 0)
+    {
+      userSubjectLine = "No template at " + userSubjectLineCode
+    }
+    else
+    {
+      userSubjectLine = results.get(0).text
+    }
+
+    // Admin Subject Line
+    results = TextTemplate.createCriteria().list {
+      and {
+        eq("code", adminSubjectLineCode)
+        eq("affiliate", inUser.affiliate)
+      }
+    }
+    if (results == null || results.size() == 0)
+    {
+      adminSubjectLine = "No template at " + adminSubjectLineCode
+    }
+    else
+    {
+      adminSubjectLine = results.get(0).text
+    }
+    // User Text
+    results = TextTemplate.createCriteria().list {
+      and {
+        eq("code", userTextCode)
+        eq("affiliate", inUser.affiliate)
+      }
+    }
+    if (results == null || results.size() == 0)
+    {
+      userBidText = "No template at " + userTextCode
+    }
+    else
+    {
+      userBidText = results.get(0).text
+    }
+
+    // Admin Text
+    results = TextTemplate.createCriteria().list {
+      and {
+        eq("code", adminTextCode)
+        eq("affiliate", inUser.affiliate)
+      }
+    }
+    if (results == null || results.size() == 0)
+    {
+      adminBidText = "No template at " + adminTextCode
+    }
+    else
+    {
+      adminBidText = results.get(0).text
+    }
+    results = PlaceHolder.createCriteria().list {
+      and {
+        eq("placeHolderType", PlaceHolderType.BID.name())
+        eq("topObject", TopObjectType.BID.name())
+      }
+    }
+    if (results != null && results.size() > 0)
+    {
+      PlaceHolderProcessor processor = new PlaceHolderProcessor()
+      userSubjectLine = processor.processPlaceHolders(inBid, results, userSubjectLine)
+      adminSubjectLine = processor.processPlaceHolders(inBid, results, adminSubjectLine)
+      userBidText = processor.processPlaceHolders(inBid, results, userBidText)
+      adminBidText = processor.processPlaceHolders(inBid, results, adminBidText)
+    }
+    String adminEmailAddressKey = PropertyCodes.BID_EMAIL_ADMIN_ADDRESS + inUser.affiliate.id
+    String fromAddressKey = PropertyCodes.BID_EMAIL_FROM_ADDRESS + inUser.affiliate.id
+    String fromAddressBackupKey = PropertyCodes.BID_EMAIL_FROM_ADDRESS
+    String adminEmailBackupKey = PropertyCodes.BID_EMAIL_ADMIN_ADDRESS
+    String adminEmail = Setting.valueFor(adminEmailAddressKey)
+    String fromAddress = Setting.valueFor(fromAddressKey)
+    if (fromAddress == null || fromAddress.length() == 0)
+    {
+      fromAddress = Setting.valueFor(fromAddressBackupKey)
+    }
+    if (adminEmail == null || adminEmail.length() == 0)
+    {
+      adminEmail = Setting.valueFor(adminEmailBackupKey)
+    }
+    String userEmail = inUser.contact.emailAddress
+    log.debug "user subject " + userSubjectLine
+    log.debug " admin subject" + adminSubjectLine
+    log.debug "user text" + userBidText
+    log.debug "admin text " + adminBidText
+    if (fromAddress == null)
+    {
+      log.error "From Address " + fromAddressKey + "or " + fromAddressBackupKey + "  is not defined. "
+    }
+    if (adminEmail == null)
+    {
+      log.error "Admin Email " + adminEmailAddressKey + " or " + adminEmailBackupKey + " is not defined."
+    }
+    log.debug " Sending the following " + "1 " + fromAddress + "2" + adminEmail + "3" + userSubjectLine + "4" + adminSubjectLine + "5" + adminBidText + userBidText
+    // Send admin email
+    sendMail {
+      to adminEmail
+      from fromAddress
+      subject adminSubjectLine
+      html adminBidText
+    }
+    // Send User Email
+    sendMail {
+      to userEmail
+      from fromAddress
+      subject userSubjectLine
+      html userBidText
+    }
+  }
+
+  def sendUpdateEmail(Bid inBid, def inFlash)
+  {
+    User user = User.findByUsername(authenticateService.principal().getUsername())
+    def placeHolders = PlaceHolder.createCriteria().list {
+      and {
+        eq("placeHolderType", PlaceHolderType.BID.name())
+        eq("topObject", TopObjectType.BID.name())
+      }
+    }
+    emailerService.sendEmail(TextCodes.BID_UPDATE_USER_EMAIL_SUBJECT, TextCodes.BID_UPDATE_USER_EMAIL_TEXT, user.affiliate, placeHolders, inBid, user.contact.emailAddress, inFlash)
+  }
+
+  def bidderSelected = {
+    def bidder
+    if (params.bidder != 'null')
+    {
+      bidder = Bidder.get(params.bidder)
+    }
+    render(template: "rates", model: [bidder: bidder])
+  }
+}

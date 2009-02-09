@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/cmmc/!svn/ver/202/trunk/acig/acigweb/grails-app/views/shared
+END
+_login.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/cmmc/!svn/ver/192/trunk/acig/acigweb/grails-app/views/shared/_login.gsp
+END
+_portfolioMetrics.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/cmmc/!svn/ver/205/trunk/acig/acigweb/grails-app/views/shared/_portfolioMetrics.gsp
+END
+_originatorSummary.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/cmmc/!svn/ver/164/trunk/acig/acigweb/grails-app/views/shared/_originatorSummary.gsp
+END
+_currentSubscriptions.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/cmmc/!svn/ver/185/trunk/acig/acigweb/grails-app/views/shared/_currentSubscriptions.gsp
+END
+_offerRight.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/cmmc/!svn/ver/199/trunk/acig/acigweb/grails-app/views/shared/_offerRight.gsp
+END
+_currentBids.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/cmmc/!svn/ver/202/trunk/acig/acigweb/grails-app/views/shared/_currentBids.gsp
+END
+_outputValue.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/cmmc/!svn/ver/202/trunk/acig/acigweb/grails-app/views/shared/_outputValue.gsp
+END
+_flash.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/cmmc/!svn/ver/162/trunk/acig/acigweb/grails-app/views/shared/_flash.gsp
+END
+_inputText.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/cmmc/!svn/ver/185/trunk/acig/acigweb/grails-app/views/shared/_inputText.gsp
+END
+_offerSummary.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/cmmc/!svn/ver/191/trunk/acig/acigweb/grails-app/views/shared/_offerSummary.gsp
+END
+_yieldDisclaimer.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/cmmc/!svn/ver/192/trunk/acig/acigweb/grails-app/views/shared/_yieldDisclaimer.gsp
+END

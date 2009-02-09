@@ -1,0 +1,16 @@
+class TextTemplate extends BaseDomain implements Serializable
+{
+  static constraints = {
+    code(nullable: false, blank: false, maxSize: 255)
+    text(nullable: false, blank: false, maxSize: 60000)
+    affiliate(nullable: false, unique: ['code'])
+    htmlFormat(nullable: false)
+  }
+  static mapping = {
+    text type: 'text'
+  }
+  Affiliate affiliate
+  String code
+  String text
+  Boolean htmlFormat = true
+}

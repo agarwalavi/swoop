@@ -1,0 +1,18 @@
+class Province extends BaseDomain implements Serializable
+{
+  static constraints = {
+    value(nullable: false, blank: false, maxSize: 2)
+    displayValue(nullable: false, blank: false, maxSize: 100)
+  }
+  static hasMany = [bidders: Bidder, originators: Originator]
+  static mapping = {
+    // This is reversed on purpose to support grails 1.0.4 mapping bug
+    bidders(column: 'province_id')
+    // This is reversed on purpose to support grails 1.0.4 mapping bug
+    originators(column: 'province_id')
+  }
+  static belongsTo = [Bidder, Originator]
+  String value
+  String displayValue
+}
+

@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/cmmc/!svn/ver/203/trunk/acig/acigweb/web-app/plugins/richui-0.6/js/tinymce/plugins/xhtmlxtras/js
+END
+attributes.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/cmmc/!svn/ver/203/trunk/acig/acigweb/web-app/plugins/richui-0.6/js/tinymce/plugins/xhtmlxtras/js/attributes.js
+END
+cite.js
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/cmmc/!svn/ver/203/trunk/acig/acigweb/web-app/plugins/richui-0.6/js/tinymce/plugins/xhtmlxtras/js/cite.js
+END
+acronym.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/cmmc/!svn/ver/203/trunk/acig/acigweb/web-app/plugins/richui-0.6/js/tinymce/plugins/xhtmlxtras/js/acronym.js
+END
+abbr.js
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/cmmc/!svn/ver/203/trunk/acig/acigweb/web-app/plugins/richui-0.6/js/tinymce/plugins/xhtmlxtras/js/abbr.js
+END
+element_common.js
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/cmmc/!svn/ver/203/trunk/acig/acigweb/web-app/plugins/richui-0.6/js/tinymce/plugins/xhtmlxtras/js/element_common.js
+END
+ins.js
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/cmmc/!svn/ver/203/trunk/acig/acigweb/web-app/plugins/richui-0.6/js/tinymce/plugins/xhtmlxtras/js/ins.js
+END
+del.js
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/cmmc/!svn/ver/203/trunk/acig/acigweb/web-app/plugins/richui-0.6/js/tinymce/plugins/xhtmlxtras/js/del.js
+END

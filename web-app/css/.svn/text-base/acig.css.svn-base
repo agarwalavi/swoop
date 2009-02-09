@@ -1,0 +1,1368 @@
+/* This is the main css for the web application.  It can be overriden dynamically to customize by affiliate */
+/* spacing parameters like margin and padding are top right bottom left */
+/* Colors
+   YELLOW         #FFDB6D
+   GREEN          #445E07
+   BROWN          #5E4F3A
+   RED            #70070C
+   DARK BROWN     #372113
+*/
+body {
+    font-family: Verdana, Arial, Helvetica, San-Serif;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+#header {
+    width: 950px;
+    margin: 0 auto;
+}
+
+#top-bar {
+    height: 100px;
+    font-size: .75em;
+    font-weight: bold;
+    background-color: #5E4F3A;
+
+}
+
+#logo {
+    height: 100px;
+    width: 250px;
+    float: left;
+    background: url( ../images/acig_logo.jpg ) top left no-repeat;
+
+}
+
+div#logo {
+    margin: 0px 0px 0px 1px;
+}
+
+#right-side {
+    float: right;
+    padding-top: 15px;
+    margin-right: 10px;
+}
+
+#right-side img {
+    vertical-align: middle;
+    border: 1px solid white;
+}
+
+#right-side a {
+    height: 10px;
+    padding-left: 10px;
+    color: white;
+    border-left: 1px solid white;
+}
+
+#right-side a.first {
+    border: none;
+    padding: 0;
+}
+
+.welcome {
+    font-weight: bold;
+}
+
+#menu-bar {
+    height: 32px;
+    background-color: #cb842e;
+}
+
+/* End of Header */
+
+/* Begin Logon */
+
+#login {
+    margin: 15px 0px;
+    padding: 0px;
+    text-align: center;
+}
+
+#login .inner {
+    width: 260px;
+    margin: 0px auto;
+    text-align: left;
+    padding: 10px;
+    background-color: white;
+}
+
+#login .inner .fheader {
+    padding: 4px;
+    margin: 3px 0px 3px 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#login .inner .cssform p {
+    clear: left;
+    margin: 0;
+    padding: 5px 0 8px 0;
+    padding-left: 105px;
+    margin-bottom: 10px;
+    height: 1%;
+}
+
+#login .inner .cssform input[type='text'] {
+    width: 120px;
+}
+
+#login .inner .cssform label {
+    font-weight: bold;
+    float: left;
+    margin-left: -105px;
+    width: 100px;
+}
+
+#login .inner .login_message {
+    color: red;
+}
+
+#login .inner .text_ {
+    width: 120px;
+}
+
+#login .inner .chk {
+    height: 12px;
+}
+
+/* End Login */
+.spinner {
+    padding: 0px 0px;
+    margin: 0px 0px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 400;
+    height: 400;
+    overflow: auto;
+    z-index: 2000;
+}
+
+/* PAGINATION */
+
+.paginateButtons {
+    background: #fff url( ../images/skin/shadow.jpg ) bottom repeat-x;
+    border: 1px solid #ccc;
+    border-top: 0;
+    color: #666;
+    font-size: 10px;
+    overflow: hidden;
+    padding: 10px 3px;
+}
+
+.paginateButtons a {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-color: #ccc #aaa #aaa #ccc;
+    color: #666;
+    margin: 0 3px;
+    padding: 2px 6px;
+}
+
+.paginateButtons span {
+    padding: 2px 3px;
+}
+
+/* End Paginate Buttons */
+
+/* Begin messages and errors defintions */
+.message {
+    background: #f3f8fc url( ../images/skin/information.png ) 8px 50% no-repeat;
+    width: 915px;
+    margin: 0 auto;
+    border: 1px solid #b2d1ff;
+    color: #006dba;
+    padding: 5px 5px 5px 30px
+}
+
+.error {
+    background: #fff3f3 url( ../images/skin/exclamation.png ) 8px 50% no-repeat;
+    width: 915px;
+    margin: 0 auto;
+    border: 1px solid red;
+    color: #cc0000;
+    padding: 5px 5px 5px 30px
+}
+
+.errors {
+    border: 1px solid red;
+}
+
+div.errors {
+    background: #fff3f3;
+    border: 1px solid red;
+    color: #cc0000;
+    margin: 10px 0 5px 0;
+    padding: 5px 0 5px 0;
+}
+
+div.errors ul {
+    list-style: none;
+    padding: 0;
+}
+
+div.errors li {
+    background: url( ../images/skin/exclamation.png ) 8px 0% no-repeat;
+    line-height: 16px;
+    padding-left: 30px;
+}
+
+td.errors select {
+    border: 1px solid red;
+}
+
+td.errors input {
+    border: 1px solid red;
+}
+
+/* End messages and errors definitions */
+
+/* begin ticker declarations */
+
+.tickercontainer {
+/* the outer div with the black border */
+    border: 1px solid #000;
+    background: #fee4bd;
+    width: 948px;
+    height: 27px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.tickercontainer .mask {
+/* that serves as a mask. so you get a sort of padding both left and right */
+    position: relative;
+    left: 4px;
+    top: 5px;
+    width: 940px;
+    height: 17px;
+    overflow: hidden;
+}
+
+ul.newsticker {
+/* that's your list */
+    position: relative;
+    left: 750px;
+    font: bold 10px Verdana;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.newsticker li {
+    float: left; /* important: display inline gives incorrect results when you check for elem's width */
+    margin: 0;
+    padding: 0;
+    background: #fee4bd; /* This fixes a wrapping issue on IE */
+    border: 1px solid #fee4bd;
+
+}
+
+ul.newsticker a {
+    white-space: nowrap;
+    padding: 0;
+    color: blue;
+    font: bold 10px Verdana;
+    margin: 0 50px 0 0;
+}
+
+ul.newsticker span {
+    margin: 0 10px 0 10px;
+}
+
+/* end ticker declarations */
+
+.required {
+    color: orange;
+}
+
+/* Begin Form Element Definitions */
+
+.form-element {
+    padding: 2px 0px 0px 0px;
+}
+
+.output-label-element {
+    font-weight: bold;
+    width: 50%;
+    float: left;
+}
+
+.output-value-element {
+    font-weight: normal;
+    width: 50%;
+}
+
+.output-wrapped-label-element {
+    font-weight: bold;
+}
+
+.output-wrapped-value-element {
+    font-weight: normal;
+}
+
+.input-label-element {
+    font-weight: bold;
+}
+
+.input-value-element {
+    font-weight: normal;
+}
+
+/* Begin General Definitions */
+
+.textarea {
+    width: 940px;
+    height: 80px;
+}
+
+thead th {
+    background-color: #cb842e
+}
+
+tr.odd td {
+    background-color: #fee4bd;
+}
+
+tr.even td {
+    background-color: white;
+}
+
+.pageHeading {
+    text-align: left;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin: 10px 10px 10px 5px;
+    color: #372113;
+}
+
+.tableHeading {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin: 10px 10px 10px 5px;
+    color: #372113;
+
+}
+
+/* End General Defintions */
+
+/* Begin Page Specific Definitions */
+
+/* Begin Originator Summary */
+
+#originatorSummary {
+}
+
+#originatorSummary .summaryHeading {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin: 10px 10px 10px 5px;
+    color: brown;
+}
+
+#originatorSummary #data {
+    color: black;
+}
+
+#originatorSummary #addressBox {
+    /*   border-style: groove;
+border-color: tan;
+border-width: 8px;
+width: 95%;
+padding: 5px 5px 5px 5px;     */
+
+}
+
+#originatorSummary #addressBox .output-label-element {
+    width: 30%;
+}
+
+#originatorSummary #addressBox .output-value-element {
+    width: 25%;
+}
+
+#originatorSummary #addressLeft {
+    float: left;
+    display: inline;
+    width: 35%;
+    /*   border-style: groove;
+border-color: green;
+border-width: 1px;     */
+}
+
+#originatorSummary #addressMiddle {
+    float: left;
+    display: inline;
+    width: 45%;
+    /*   border-style: groove;
+ border-color: green;
+ border-width: 1px;
+ color: red;  */
+}
+
+#originatorSummary #addressMiddle .output-label-element {
+    width: 50%;
+}
+
+#originatorSummary #addressMiddle .output-value-element {
+    width: 50%;
+}
+
+#originatorSummary #addressRight {
+    display: inline;
+    float: left;
+    width: 15%;
+    /*   border-style: groove;
+border-color: green;
+border-width: 1px;
+color: red;    */
+}
+
+#originatorSummary #address {
+    color: black;
+    font-weight: normal;
+    font-size: 1.0em;
+}
+
+#originatorSummary #address #companyName {
+    color: black;
+    font-weight: bold;
+    font-size: 1.50em;
+    word-wrap: break-word;
+}
+
+#originatorSummary #address .addressLine {
+    color: black;
+    font-weight: normal;
+    font-size: 1.2em;
+}
+
+#originatorSummary .output-label-element {
+    width: 25%;
+}
+
+#originatorSummary .output-value-element {
+
+}
+
+/* End Originator Summary */
+
+/* Begin Offer Summary */
+#offerSummary {
+}
+
+#offerSummary .summaryHeading {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin: 10px 10px 10px 5px;
+    color: brown;
+}
+
+#offerSummary #typeBox {
+    border-style: ridge;
+    border-color: #5E4F3A;
+    border-width: 5px;
+    padding: 15px 5px 15px 5px;
+}
+
+#offerSummary #offer.originator-output-label-element {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin: 10px 10px 10px 5px;
+    color: brown;
+}
+
+/* End Offer Summary */
+/* Begin Offer summary right side reused in bid create */
+
+#offerRight #offerData1l {
+    border-bottom-style: dotted;
+    border-bottom-color: black;
+    border-bottom-width: 2px;
+    padding: 10px 0px 5px 0px;
+}
+
+#offerRight #offerData2l {
+    border-bottom-style: dotted;
+    border-bottom-color: black;
+    border-bottom-width: 2px;
+    padding: 5px 0px 5px 0px;
+}
+
+#offerRight #offerData3l {
+    padding: 0px 0px 0px 0px;
+}
+
+/* End of offer summary Right side */
+
+/* Begin portfolio metrics */
+
+#portfolioMetrics {
+    border-style: ridge;
+    border-color: #5E4F3A;
+    border-width: 5px;
+    padding: 15px 5px 15px 5px;
+}
+
+#portfolioMetrics #metricsHeading {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin: 10px 10px 10px 5px;
+    color: brown;
+}
+
+#createBid #bidCreateRightMain #portfolioMetrics .output-label-element {
+    width: 50%;
+    float: left;
+}
+
+#createBid .textarea {
+    width: 90%;
+    height: 60px;
+}
+
+/* End portfolio metrics */
+
+/* Create Bid */
+
+#CreateBidLabel {
+    word-wrap: break-word;
+    text-align: left;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #372113;
+}
+
+#createBid {
+    margin: 10px 0px 10px 0px;
+}
+
+#createBid #bidCreateRightMain {
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    padding: 0px 0px 0px 0px;
+
+}
+
+#createBid #bidCreateRightMain #makeHeader {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #372113;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    padding: 0px 0px 0px 0px;
+    background-color: #fee4bd;
+}
+
+#createBid #createBidData {
+    padding: 0px 0px 0px 0px;
+    margin: 5px 0px 0px 10px;
+}
+
+#createBid #bidCreateRightMain .output-label-element {
+    width: 35%;
+    float: left;
+}
+
+#createBid .output-value-element {
+
+}
+
+#createBid #bidCreateRightMain .input-label-element {
+    width: 35%;
+    float: left;
+}
+
+#createBid #amountDetail {
+    padding: 0px 0px 0px 0px;
+    /*   border-style: groove;
+border-color: green;
+border-width: 1px;   */
+}
+
+#createBid #amountDetail .output-label-element {
+    width: 35%;
+    /*    color: red;
+        border-style: groove;
+        border-color: green;
+        border-width: 1px;  */
+
+}
+
+#createBid #amountDetail .output-value-element {
+    width: 50%;
+    /*    color: orange;
+ border-style: groove;
+ border-color: green;
+ border-width: 1px;  */
+
+}
+
+#createBid #circular-input .output-label-element {
+    width: 10%;
+    float: left;
+    display: inline;
+}
+
+#createBid #circular-output {
+    display: inline;
+}
+
+#createBid #bidderLabel {
+    display: inline;
+
+}
+
+#createBid #bidderValue {
+    display: inline;
+}
+
+#createBid #createButton {
+    margin: 0px 40px 0px 0px;
+    float: right;
+}
+
+#createBid #textarea {
+    width: 400px;
+    height: 80px;
+}
+
+#createBid #metrics {
+    margin: 0px 0px 0px 0px;
+}
+
+/* End Page Specific Definitions */
+/* Begin Footer Defintions */
+#footer {
+    background-color: #5E4F3A;
+    padding: 5px 0px 10px 0px;
+    color: white;
+    font-size: 12px;
+    width: 950px;
+    margin: 0 auto;
+    height: 15px;
+}
+
+#footer a {
+    color: white;
+}
+
+#footer-left-side {
+    float: left;
+    margin: 0px 5px 0px 5px;
+}
+
+#footer-right-side {
+    margin: 0px 5px 0px 5px;
+    float: right;
+    vertical-align: baseline;
+    border: none;
+    padding: 0;
+    margin: 0 auto;
+
+}
+
+#footer-right-side a {
+    height: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: white;
+
+}
+
+#footer-right-side a.first {
+    border: none;
+    padding: 0;
+}
+
+/* End Footer Definitions */
+
+/* Begin JQuery UI General Definitions */
+
+/* Layout helpers
+----------------------------------*/
+.ui-helper-hidden {
+    display: none;
+}
+
+.ui-helper-hidden-accessible {
+    position: absolute;
+    left: -99999999px;
+}
+
+.ui-helper-reset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    line-height: 1.3;
+    text-decoration: none;
+    font-size: 100%;
+    list-style: none;
+}
+
+.ui-helper-clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.ui-helper-clearfix {
+    display: inline-block;
+}
+
+/* required comment for clearfix to work in Opera \*/
+* html .ui-helper-clearfix {
+    height: 1%;
+}
+
+.ui-helper-clearfix {
+    display: block;
+}
+
+/* end clearfix */
+.ui-helper-zfix {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    opacity: 0;
+    filter: Alpha( Opacity = 0 );
+}
+
+/* Interaction Cues
+----------------------------------*/
+.ui-state-disabled {
+    cursor: default !important;
+}
+
+/* Icons
+----------------------------------*/
+
+/* states and images */
+.ui-icon {
+    display: block;
+    text-indent: -99999px;
+    overflow: hidden;
+    background-repeat: no-repeat;
+}
+
+/* Misc visuals
+----------------------------------*/
+
+/* Overlays */
+.ui-widget-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* End Jquery UI General Definitions */
+
+/* Begin Jquery UI Tabs */
+.ui-tabs {
+    padding: .2em;
+    z-index: 1;
+}
+
+.ui-tabs-nav {
+    padding: .2em .2em 0 .2em;
+    position: relative;
+}
+
+.ui-tabs-nav li {
+    float: left;
+    border-bottom: 0 !important;
+    margin: 0 .2em -1px 0;
+    padding: 0;
+}
+
+.ui-tabs-nav li a {
+    display: block;
+    text-decoration: none;
+    padding: .5em 1em;
+}
+
+.ui-tabs-nav li.ui-tabs-selected {
+    padding-bottom: .1em;
+    border-bottom: 0;
+}
+
+.ui-tabs-panel {
+    padding: 1em 1.4em;
+    display: block;
+    border: 0;
+    background: none;
+}
+
+.ui-tabs-hide {
+    display: none !important;
+}
+
+/* End Jquery UI Tabs */
+
+/* Beging Jquery UI Resizable */
+/* Resizable
+----------------------------------*/
+.ui-resizable {
+    position: relative;
+}
+
+.ui-resizable-handle {
+    position: absolute;
+    font-size: 0.1px;
+    z-index: 99999;
+    display: block;
+}
+
+.ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle {
+    display: none;
+}
+
+.ui-resizable-n {
+    cursor: n-resize;
+    height: 7px;
+    width: 100%;
+    top: -5px;
+    left: 0px;
+}
+
+.ui-resizable-s {
+    cursor: s-resize;
+    height: 7px;
+    width: 100%;
+    bottom: -5px;
+    left: 0px;
+}
+
+.ui-resizable-e {
+    cursor: e-resize;
+    width: 7px;
+    right: -5px;
+    top: 0px;
+    height: 100%;
+}
+
+.ui-resizable-w {
+    cursor: w-resize;
+    width: 7px;
+    left: -5px;
+    top: 0px;
+    height: 100%;
+}
+
+.ui-resizable-se {
+    cursor: se-resize;
+    width: 12px;
+    height: 12px;
+    right: 1px;
+    bottom: 1px;
+}
+
+.ui-resizable-sw {
+    cursor: sw-resize;
+    width: 9px;
+    height: 9px;
+    left: -5px;
+    bottom: -5px;
+}
+
+.ui-resizable-nw {
+    cursor: nw-resize;
+    width: 9px;
+    height: 9px;
+    left: -5px;
+    top: -5px;
+}
+
+.ui-resizable-ne {
+    cursor: ne-resize;
+    width: 9px;
+    height: 9px;
+    right: -5px;
+    top: -5px;
+}
+
+/* End jQuery UI resizable */
+/*  Beging Jquery UI Dialog
+----------------------------------*/
+.ui-dialog {
+    position: relative;
+    padding: .2em;
+    width: 300px;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+    padding: .5em .3em .3em 1em;
+    position: relative;
+}
+
+.ui-dialog .ui-dialog-title {
+    float: left;
+    margin: .1em 0 .2em;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    position: absolute;
+    right: .3em;
+    top: 50%;
+    width: 19px;
+    margin: -10px 0 0 0;
+    padding: 1px;
+    height: 18px;
+}
+
+.ui-dialog .ui-dialog-titlebar-close span {
+    display: block;
+    margin: 1px;
+}
+
+.ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus {
+    padding: 0;
+}
+
+.ui-dialog .ui-dialog-content {
+    border: 0;
+    padding: .5em 1em;
+    background: none;
+    overflow: auto;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+    text-align: left;
+    border-width: 1px 0 0 0;
+    background-image: none;
+    margin: .5em 0 0 0;
+    padding: .3em 1em .5em .4em;
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+    float: right;
+    margin: .5em .4em .5em 0;
+    cursor: pointer;
+    padding: .2em .6em .3em .6em;
+    line-height: 1.4em;
+    width: auto;
+    overflow: visible;
+}
+
+.ui-dialog .ui-resizable-se {
+    width: 14px;
+    height: 14px;
+    right: 3px;
+    bottom: 3px;
+}
+
+.ui-draggable .ui-dialog-titlebar {
+    cursor: move;
+}
+
+/* End Jquery UI Dialog */
+/* Begin JQuery UI Accordion */
+.ui-accordion-group {
+    margin-bottom: 1px;
+}
+
+.ui-accordion-header {
+    cursor: pointer;
+    position: relative;
+}
+
+.ui-accordion-selected .ui-accordion-header {
+    border-bottom: 0;
+}
+
+.ui-accordion .ui-icon {
+    position: absolute;
+    left: .5em;
+    top: 1.15em;
+    margin-top: -8px;
+}
+
+.ui-accordion-header a {
+    display: block;
+    font-size: 1em;
+    padding: .5em .5em .5em 2.2em;
+}
+
+.ui-accordion-content-wrap {
+    border-top: 0;
+    margin-top: -1px;
+    position: relative;
+    top: 1px;
+}
+
+.ui-accordion-content {
+    padding: 0px 5px 0px 5px; /*   padding: 1em 2.2em; */
+}
+
+/* End JQuery UI Accorion */
+
+/* Begin JQuery UI Slider */
+/* Slider
+----------------------------------*/
+.ui-slider {
+    position: relative;
+    text-align: left;
+}
+
+.ui-slider .ui-slider-handle {
+    position: absolute;
+    z-index: 2;
+    width: 1.2em;
+    height: 1.2em;
+    cursor: default;
+}
+
+.ui-slider .ui-slider-range {
+    position: absolute;
+    z-index: 1;
+    font-size: 1%;
+    display: block;
+    border: 0;
+}
+
+.ui-slider-horizontal {
+    height: .8em;
+}
+
+.ui-slider-horizontal .ui-slider-handle {
+    top: -.3em;
+    margin-left: -.6em;
+}
+
+.ui-slider-horizontal .ui-slider-range {
+    top: 0;
+    height: 100%;
+}
+
+.ui-slider-horizontal .ui-slider-range-min {
+    left: 0;
+}
+
+.ui-slider-horizontal .ui-slider-range-max {
+    right: 0;
+}
+
+.ui-slider-vertical {
+    width: .8em;
+    height: 100px;
+}
+
+.ui-slider-vertical .ui-slider-handle {
+    left: -.3em;
+    margin-left: 0;
+    margin-bottom: -.6em;
+}
+
+.ui-slider-vertical .ui-slider-range {
+    left: 0;
+    width: 100%;
+}
+
+.ui-slider-vertical .ui-slider-range-min {
+    bottom: 0;
+}
+
+.ui-slider-vertical .ui-slider-range-max {
+    top: 0;
+}
+
+/* End Jquery UI Slider */
+/* Begin Menu Definition */
+
+/*** ESSENTIAL STYLES ***/
+.sf-menu, .sf-menu * {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sf-menu {
+    line-height: 1.0;
+}
+
+.sf-menu ul {
+    position: absolute;
+    top: -999em;
+    width: 10em; /* left offset of submenus need to match (see below) */
+}
+
+.sf-menu ul li {
+    width: 100%;
+}
+
+.sf-menu li:hover {
+    visibility: inherit; /* fixes IE7 'sticky bug' */
+}
+
+.sf-menu li {
+    float: left;
+    position: relative; /* Added to support IE z-index bug */
+    z-index: 2;
+}
+
+.sf-menu a {
+    display: block;
+    position: relative;
+}
+
+.sf-menu li:hover ul,
+    .sf-menu li.sfHover ul {
+    left: 0;
+    top: 2.5em; /* match top ul list item height */
+    z-index: 99;
+}
+
+ul.sf-menu li:hover li ul,
+    ul.sf-menu li.sfHover li ul {
+    top: -999em;
+}
+
+ul.sf-menu li li:hover ul,
+    ul.sf-menu li li.sfHover ul {
+    left: 10em; /* match ul width */
+    top: 0;
+}
+
+ul.sf-menu li li:hover li ul,
+    ul.sf-menu li li.sfHover li ul {
+    top: -999em;
+}
+
+ul.sf-menu li li li:hover ul,
+    ul.sf-menu li li li.sfHover ul {
+    left: 10em; /* match ul width */
+    top: 0;
+}
+
+/*** DEMO SKIN ***/
+.sf-menu {
+    float: left;
+    margin-bottom: 0;
+}
+
+.sf-menu a {
+    border-top: 1px solid #CFDEFF;
+    border-right: 1px solid #CFDEFF;
+    padding: .75em 1em;
+    text-decoration: none;
+    font-color: black;
+}
+
+.sf-menu a, .sf-menu a:visited {
+/* visited pseudo selector so IE6 applies text colour*/
+    color: black;
+}
+
+.sf-menu li {
+    background: #cb842e;
+}
+
+.sf-menu li li {
+    background: #cb842e;
+}
+
+.sf-menu li li li {
+    background: green;
+}
+
+.sf-menu li:hover, .sf-menu li.sfHover,
+    .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
+    background: #fee4bd;
+    outline: 0;
+}
+
+/*** arrows **/
+.sf-menu a.sf-with-ul {
+    padding-right: 2.25em;
+    min-width: 1px; /* trigger IE7 hasLayout so spans position accurately */
+}
+
+.sf-sub-indicator {
+    position: absolute;
+    display: block;
+    right: .75em;
+    top: 1.05em; /* IE6 only */
+    width: 10px;
+    height: 10px;
+    text-indent: -999em;
+    overflow: hidden;
+    background: url( '../images/arrows-ffffff.png' ) no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
+}
+
+a > .sf-sub-indicator {
+/* give all except IE6 the correct values */
+    top: .8em;
+    background-position: 0 -100px; /* use translucent arrow for modern browsers*/
+}
+
+/* apply hovers to modern browsers */
+a:focus > .sf-sub-indicator,
+    a:hover > .sf-sub-indicator,
+    a:active > .sf-sub-indicator,
+    li:hover > a > .sf-sub-indicator,
+    li.sfHover > a > .sf-sub-indicator {
+    background-position: -10px -100px; /* arrow hovers for modern browsers*/
+}
+
+/* point right for anchors in subs */
+.sf-menu ul .sf-sub-indicator {
+    background-position: -10px 0;
+}
+
+.sf-menu ul a > .sf-sub-indicator {
+    background-position: 0 0;
+}
+
+/* apply hovers to modern browsers */
+.sf-menu ul a:focus > .sf-sub-indicator,
+    .sf-menu ul a:hover > .sf-sub-indicator,
+    .sf-menu ul a:active > .sf-sub-indicator,
+    .sf-menu ul li:hover > a > .sf-sub-indicator,
+    .sf-menu ul li.sfHover > a > .sf-sub-indicator {
+    background-position: -10px 0; /* arrow hovers for modern browsers*/
+}
+
+/*** shadows for all but IE6 ***/
+.sf-shadow ul {
+    background: url( '../images/shadow.png' ) no-repeat bottom right;
+    padding: 0 8px 9px 0;
+    -moz-border-radius-bottomleft: 17px;
+    -moz-border-radius-topright: 17px;
+    -webkit-border-top-right-radius: 17px;
+    -webkit-border-bottom-left-radius: 17px;
+}
+
+.sf-shadow ul.sf-shadow-off {
+    background: transparent;
+}
+
+/* End of menu Defintion */
+/* Begin spin button */
+.spin-button {
+    padding-right: 20px; /* Padding pevents text from covering the up/dn img. Works better in Firefox but also causes textbox to widen by 20px. Arrows can go wonky in IE when text is too long. Perhaps it could be fixed with script that monitored the horiz-scroll position? */
+    background-repeat: no-repeat; /* Warning: Img may disappear in Firefox if you use 'background-attachment:fixed' ! */
+    background-position: 100% 0%;
+    background-image: url( ../images/spinbtn_updn.gif );
+}
+
+.spin-button.up {
+/* Change button img when mouse is over the UP-arrow */
+    cursor: pointer;
+    background-position: 100% -18px; /* 18px matches height of 2 visible buttons */
+}
+
+.spin-button.down {
+/* Change button img when mouse is over the DOWN-arrow */
+    cursor: pointer;
+    background-position: 100% -36px; /* 36px matches height of 2x2 visible buttons */
+}
+
+/* End spin button */
+
+/* Begin Buttons */
+
+input {
+    font-weight: normal;
+    font-size: 12px;
+}
+
+.buttons {
+    margin: 5px 5px 10px 0px;
+}
+
+.button {
+    border: 2px solid #fee4bd;
+    background-color: #cb842e;
+    color: #fff;
+    font-weight: normal;
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 0px 2px 0px 2px;
+    margin: 0px 0px 0px 3px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    text-decoration: none;
+}
+
+.button:hover {
+
+    background-color: #fee4bd;
+    color: black;
+    cursor: pointer;
+}
+
+.button.wrapped {
+    display: inline-block;
+    border: none;
+    background: transparent none;
+    float: none;
+    margin: 0;
+}
+
+span.button {
+    position: relative;
+}
+
+span.button i {
+    position: absolute;
+    width: 4px;
+    height: 4px; /*   background: url( ../images/corners.png ) no-repeat; */
+}
+
+span.button i.tl {
+    top: -2px;
+    left: -2px;
+    background-position: 0 0;
+}
+
+span.button i.tr {
+    top: -2px;
+    right: -2px;
+    background-position: -4px 0;
+}
+
+span.button i.bl {
+    bottom: -2px;
+    left: -2px;
+    background-position: 0 -4px;
+}
+
+span.button i.br {
+    bottom: -2px;
+    right: -2px;
+    background-position: -4px -4px;
+}
+
+/* End of Buttons */
+
+/* Beginning Timeline */
+
+.timeline {
+    height: 300px;
+    width: 850px;
+    border: 1px solid #aaa;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+/* End Timeline */
+
+

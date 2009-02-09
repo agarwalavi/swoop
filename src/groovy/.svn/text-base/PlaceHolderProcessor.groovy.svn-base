@@ -1,0 +1,56 @@
+import com.acig.acigweb.reference.PlaceHolderDataType
+
+public class PlaceHolderProcessor
+{
+  String processPlaceHolders(def inObject, List inPlaceHolders, String inString)
+  {
+    // TODO Optimize this one!!
+    inPlaceHolders.each {
+      String attributeName = it?.attributeName
+      def value = inObject
+
+      String[] accessors = attributeName?.tokenize(".")
+
+      accessors?.each {
+        value = value[it]
+      }
+      value = formatValue(it?.dataType, value)
+      String replaceValue = it?.placeHolder
+      inString = inString?.replaceAll(replaceValue, value)
+    }
+    return inString
+  }
+
+  String formatValue(String inType, def inValue)
+  {
+    // TODO THis is regex nightmare so escape all special strings
+    if (inValue == null)
+    {
+      return "N/A"
+    }
+    if (inType == PlaceHolderDataType.DATE.name())
+    {
+      return new java.text.SimpleDateFormat("MM/dd/yyyy hh:mm a").format(inValue)
+    }
+    else if (inType == PlaceHolderDataType.MONEY.name())
+    {
+      return "\\" + java.text.NumberFormat.getCurrencyInstance().format(inValue)
+    }
+    else if (inType == PlaceHolderDataType.PERCENT.name())
+      {
+        return inValue + "%"
+      }
+      else if (inType == PlaceHolderDataType.INTEGER.name())
+        {
+          return inValue?.toString()
+        }
+        else if (inType == PlaceHolderDataType.DECIMAL.name())
+          {
+            return inValue?.toString()
+          }
+          else
+          {
+            return inValue
+          }
+  }
+}

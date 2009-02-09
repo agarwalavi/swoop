@@ -1,0 +1,6 @@
+class IndexUpdateJobTests extends GroovyTestCase {
+
+    void testSomething() {
+
+    }
+}

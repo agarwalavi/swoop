@@ -1,0 +1,21 @@
+class Affiliate extends BaseDomain implements Serializable
+{
+  static constraints = {
+    companyName(nullable: false, blank: false, unique: true, maxSize: 255)
+    mailAddress(nullable: false)
+    contact(nullable: false)
+    master(nullable: false)
+    enabled(nullable: false)
+    logoUrl(nullable: true, blank: true, url: true, maxSize: 255)
+    styleSheet(nullable: true, blank: true, maxSize: 100)
+  }
+  static hasMany = [people: User, originators: Originator, bidders: Bidder]
+  static embedded = ['mailAddress', 'contact']
+  String companyName
+  Address mailAddress = new Address()
+  Contact contact = new Contact()
+  Boolean master = false
+  Boolean enabled = true
+  String logoUrl
+  String styleSheet
+}

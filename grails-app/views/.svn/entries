@@ -1,0 +1,143 @@
+9
+
+dir
+204
+http://www.denveropensource.org/svn/cmmc/trunk/acig/acigweb/grails-app/views
+http://www.denveropensource.org/svn/cmmc
+
+
+
+2009-02-06T04:43:51.793804Z
+202
+scryan
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+93da7453-5d3b-40cf-bdc4-5822ef7a0e2c
+
+
+
+
+
+
+0
+
+affiliate
+dir
+
+autoOfferDetail
+dir
+
+bid
+dir
+
+bidder
+dir
+
+error.gsp
+file
+
+
+
+
+2009-02-04T23:10:34.000000Z
+9efef43d9da82124acf87bb69bdf89e5
+2009-02-04T23:50:19.305893Z
+192
+scryan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1606
+
+home
+dir
+
+layouts
+dir
+
+login
+dir
+
+offer
+dir
+
+originator
+dir
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+http://www.denveropensource.org/svn/cmmc/trunk/acig/acigweb/grails-app/views/offerer
+123
+
+placeHolder
+dir
+
+register
+dir
+
+report
+dir
+
+role
+dir
+
+shared
+dir
+
+subscription
+dir
+
+textTemplate
+dir
+
+trackedIndex
+dir
+
+user
+dir
+

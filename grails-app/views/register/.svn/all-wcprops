@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/cmmc/!svn/ver/192/trunk/acig/acigweb/grails-app/views/register
+END
+edit.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/cmmc/!svn/ver/192/trunk/acig/acigweb/grails-app/views/register/edit.gsp
+END
+show.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/cmmc/!svn/ver/192/trunk/acig/acigweb/grails-app/views/register/show.gsp
+END
+index.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/cmmc/!svn/ver/192/trunk/acig/acigweb/grails-app/views/register/index.gsp
+END

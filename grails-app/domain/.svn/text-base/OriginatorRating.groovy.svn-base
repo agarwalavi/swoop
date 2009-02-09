@@ -1,0 +1,15 @@
+public class OriginatorRating extends BaseDomain implements Serializable
+{
+  static constraints =
+  {
+    // Only one rating per user per originator
+    user(nullable: false, unique: ['originator'])
+    originator(nullable: false)
+    rating(nullable: false, range: 1..5, scale: 2)
+    comment(nullable: true, maxSize: 255)
+  }
+  User user
+  Originator originator
+  BigDecimal rating
+  String comment
+}

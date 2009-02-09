@@ -1,0 +1,94 @@
+import org.codehaus.groovy.grails.plugins.web.taglib.FormTagLib
+
+class AcigTagLib
+{
+  def formatMoney = {attrs, body ->
+    if (attrs.money != null)
+    {
+      out << new java.text.DecimalFormat('$#,##0;($#,##0)').format(attrs.money)
+    }
+    else
+    {
+      out << "N/A"
+    }
+  }
+  def formatEnum = {attrs, body ->
+    out << com.acig.acigweb.reference.EnumTranslator.translate(attrs.value)
+  }
+  def acigFlash = {attrs, body ->
+    out << render(template: "/shared/flash", model: [flash: attrs.flash])
+  }
+  def acigOutputValue = {attrs, body ->
+    out << render(template: "/shared/outputValue", model: [id: attrs.id, label: attrs.label, value: attrs.value, type: attrs.type, newline: attrs.newline, numberFormat: attrs.numberFormat])
+  }
+  def acigInputText = {attrs, body ->
+    out << render(template: "/shared/inputText", model: [label: attrs.label, size: attrs.size, maxlength: attrs.maxlength, addClass: attrs.addClass, bean: attrs.bean, field: attrs.field, required: attrs.required, inline: attrs.inline, type: attrs.type])
+  }
+  def acigTextField = {attrs ->
+    // If a controller returned the bean, and the field has an error,
+    // then "errors" will be returned as HTML class, otherwise the class will be empty.
+    attrs.class = hasErrors(bean: attrs.bean, field: attrs.field, 'errors')
+    if (attrs.addClass != null && attrs.addClass.length() > 0)
+    {
+      attrs.class = attrs.class + " " + attrs.addClass
+    }
+
+    // Retrieves the field value of the given bean to be rendered in the view.
+    // Note: specify the bean and not the bean name. So "${user}" instead of "user"
+    attrs.value = fieldValue(bean: attrs.bean, field: attrs.field)
+    // Required for textField taglib. attrs.name is a keyname of the params map
+    attrs.name = attrs.field
+    // renders the HTML tag
+    out << new FormTagLib().textField(attrs)
+  }
+  def acigPasswordField = {attrs ->
+    // If a controller returned the bean, and the field has an error,
+    // then "errors" will be returned as HTML class, otherwise the class will be empty.
+    attrs.class = hasErrors(bean: attrs.bean, field: attrs.field, 'errors')
+    if (attrs.addClass != null && attrs.addClass.length() > 0)
+    {
+      attrs.class = attrs.class + " " + attrs.addClass
+    }
+
+    // Retrieves the field value of the given bean to be rendered in the view.
+    // Note: specify the bean and not the bean name. So "${user}" instead of "user"
+    attrs.value = fieldValue(bean: attrs.bean, field: attrs.field)
+    // Required for textField taglib. attrs.name is a keyname of the params map
+    attrs.name = attrs.field
+    // renders the HTML tag
+    out << new FormTagLib().passwordField(attrs)
+  }
+
+  def indexTicker = {attrs ->
+    def indexes = TrackedIndex.list()
+    indexes.each {
+      def date = new java.text.SimpleDateFormat("MM/dd/yyyy hh:mm a").format(it.lastUpdated)
+      out << "<li>"
+      out << "<span>" + date + "</span><a href='"
+      if (it.url == null || it.url.length() == 0)
+      {
+        out << "#' target='_blank'>" + it.name + "(" + it.value + ")</a>"
+      }
+      else
+      {
+        out << it.url + "' target='_blank'>" + it.name + "(" + it.value + ")</a>"
+      }
+      out << "</li>"
+    }
+  }
+  def acigUploadErrors = {attrs ->
+    if (attrs.errors != null)
+    {
+      def badLines = attrs.errors["BADLINES"]
+      if (badLines != null && badLines.size() > 0)
+      {
+        out << "<div class='errors'><ul>"
+
+        badLines.each {
+          out << "<li> Line " + it["BADLINE"] + " " + it["MESSAGE"] + "</li>"
+        }
+        out << "</ul></div>"
+      }
+    }
+  }
+}

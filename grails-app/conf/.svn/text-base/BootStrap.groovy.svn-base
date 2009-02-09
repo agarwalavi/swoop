@@ -1,0 +1,814 @@
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.util.GrailsUtil
+import com.acig.acigweb.reference.OfferType
+import com.acig.acigweb.reference.OfferSubType
+import com.acig.acigweb.reference.AssetClassType
+import com.acig.acigweb.reference.CompanyType
+import com.acig.acigweb.reference.CharterType
+import com.acig.acigweb.reference.InsuranceType
+import com.acig.acigweb.reference.PlaceHolderType
+import com.acig.acigweb.reference.PlaceHolderDataType
+import com.acig.acigweb.reference.OfferStatusType
+import com.acig.acigweb.reference.BidStatusType
+import com.acig.acigweb.reference.IndexType
+import com.acig.acigweb.reference.PropertyCodes
+import com.acig.acigweb.reference.TopObjectType
+
+class BootStrap
+{
+  def init =
+  {servletContext ->
+    if (GrailsUtil.environment == 'seeddata')
+    {
+      createReferenceData()
+      createSettings()
+      createRoles()
+      createSampleAffiliate()
+      createUsers()
+      createIndexes()
+    }
+    if (GrailsUtil.environment == 'newdata')
+    {
+      createReferenceData()
+      createSettings()
+      createRoles()
+      createSampleAffiliate()
+      createUsers()
+      createSampleOriginator()
+      createSampleBidder()
+      createRates()
+      createSampleOffer()
+      createSampleBid()
+      createSampleSubscription()
+      createIndexes()
+      createRptLoanDetail()
+    }
+    if (GrailsUtil.environment == GrailsApplication.ENV_PRODUCTION)
+    {
+      //createAdminUser()
+    }
+    def destroy =
+    {
+    }
+  }
+
+  void createRptLoanDetail()
+  {
+    RptLoanDetail detail
+
+
+    def x = 3
+    while (x-- > 1)
+    {
+      def y = 30
+      while (y-- > 0)
+      {
+        detail = new RptLoanDetail()
+        detail.offer = Offer.get(x)
+
+        detail.asOfDate = new Date()
+        detail.accountNumber = y * 88
+        detail.fico = 780
+        detail.contractDate = new Date() + y
+        detail.firstPaymentDueDate = new Date() + (y * 7)
+        detail.nextDueDate = new Date() + (y * 30)
+        detail.maturityDate = new Date() + (60 * y)
+        detail.remainingTerm = y * 7
+        detail.originalTerm = (y * 7) + 100
+        detail.loanAmt = 99 * y
+        detail.previousMonthBalanceAmt = 22 * y
+        detail.mtdPrincipalPaidAmt = 4 * y
+        detail.principalAdjustmentDebitAmt = y
+        detail.principalAdjustmentCreditAmt = y
+        detail.outstandingBalanceAmt = y * 66
+        detail.scheduledPaymentAmt = y * 4
+        detail.itdPrincipalRepaidAmt = y * 3
+        detail.daysPastDue = 10 * y
+        detail.termFrequency = "M"
+        detail.collateralType = "AUTO"
+        if (y % 2)
+        {
+          detail.newAuto = true
+        }
+        else
+        {
+          detail.newAuto = false
+        }
+        detail.collateralReferenceNumber = y * 8478748
+        detail.collateralDescription = "Test Auto"
+        detail.notes = "notes we don't neeed notes"
+        if (!detail.save())
+        {
+          detail.errors.allErrors.each {
+            println it
+          }
+        }
+      }
+    }
+  }
+
+  void createSettings()
+  {
+    createSettingEntry(PropertyCodes.BID_EMAIL_FROM_ADDRESS, "scott@theryansplace.com", "string")
+    createSettingEntry(PropertyCodes.BID_EMAIL_ADMIN_ADDRESS, "scott@theryansplace.com", "string")
+    createSettingEntry(PropertyCodes.INFO_EMAIL_ADDRESS, "scott@theryansplace.com", "string")
+    createSettingEntry(PropertyCodes.BID_EMAIL_FROM_ADDRESS + ".1", "scott@theryansplace.com", "string")
+    createSettingEntry(PropertyCodes.BID_EMAIL_ADMIN_ADDRESS + ".1", "scott@theryansplace.com", "string")
+  }
+
+  void createSettingEntry(String inCode, String inValue, String inType)
+  {
+    Setting setting = new Setting()
+    setting.value = inValue
+    setting.code = inCode
+    setting.type = inType
+    setting.save()
+  }
+
+  void createPlaceholder(String inTopObject, String inPlaceHolderType, String inPlaceHolder, String inAttributeName, String inDataType, String inDescription)
+  {
+    // Place Holders
+    PlaceHolder placeHolder = new PlaceHolder()
+    placeHolder.placeHolder = inPlaceHolder
+    placeHolder.attributeName = inAttributeName
+    placeHolder.dataType = inDataType
+    placeHolder.description = inDescription
+    placeHolder.placeHolderType = inPlaceHolderType
+    placeHolder.topObject = inTopObject
+    if (!placeHolder.save())
+    {
+      placeHolder.errors.allErrors.each {
+        println it
+      }
+    }
+  }
+
+  void createSampleSubscription()
+  {
+    Subscription subscription = new Subscription()
+
+    subscription.offer = Offer.get(1)
+    subscription.bidder = Bidder.get(1)
+    subscription.effectiveDate = new Date()
+    subscription.settlementDate = new Date() + 8
+    subscription.couponPct = 4.5
+    subscription.ownershipPct = 10
+    if (!subscription.save())
+    {
+      subscription.errors.allErrors.each {
+        println it
+      }
+    }
+
+    subscription = new Subscription()
+
+    subscription.offer = Offer.get(1)
+    subscription.bidder = Bidder.get(1)
+    subscription.effectiveDate = new Date()
+    subscription.settlementDate = new Date() + 8
+    subscription.couponPct = 4.5
+    subscription.ownershipPct = 10
+    if (!subscription.save())
+    {
+      subscription.errors.allErrors.each {
+        println it
+      }
+    }
+
+    subscription = new Subscription()
+
+    subscription.offer = Offer.get(1)
+    subscription.bidder = Bidder.get(1)
+    subscription.effectiveDate = new Date()
+    subscription.settlementDate = new Date() + 8
+    subscription.couponPct = 4.5
+    subscription.ownershipPct = 10
+    if (!subscription.save())
+    {
+      subscription.errors.allErrors.each {
+        println it
+      }
+    }
+    subscription = new Subscription()
+
+    subscription.offer = Offer.get(1)
+    subscription.bidder = Bidder.get(2)
+    subscription.effectiveDate = new Date()
+    subscription.settlementDate = new Date() + 8
+    subscription.couponPct = 4.5
+    subscription.ownershipPct = 10
+    if (!subscription.save())
+    {
+      subscription.errors.allErrors.each {
+        println it
+      }
+    }
+  }
+
+  void createReferenceData()
+  {
+    // Province Data
+    saveReference("AL", "AL", new Province())
+    saveReference("AK", "AK", new Province())
+    saveReference("AZ", "AZ", new Province())
+    saveReference("AR", "AR", new Province())
+    saveReference("CA", "CA", new Province())
+    saveReference("CO", "CO", new Province())
+    saveReference("CT", "CT", new Province())
+    saveReference("DE", "DE", new Province())
+    saveReference("DC", "DC", new Province())
+    saveReference("FL", "FL", new Province())
+    saveReference("GA", "GA", new Province())
+    saveReference("HI", "HI", new Province())
+    saveReference("ID", "ID", new Province())
+    saveReference("IL", "IN", new Province())
+    saveReference("IL", "IN", new Province())
+    saveReference("IA", "IA", new Province())
+    saveReference("KS", "KS", new Province())
+    saveReference("KY", "KY", new Province())
+    saveReference("LA", "LA", new Province())
+    saveReference("ME", "ME", new Province())
+    saveReference("MD", "MD", new Province())
+    saveReference("MA", "MA", new Province())
+    saveReference("MI", "MI", new Province())
+    saveReference("MN", "MN", new Province())
+    saveReference("MS", "MS", new Province())
+    saveReference("MO", "MO", new Province())
+    saveReference("MT", "MT", new Province())
+    saveReference("NE", "NE", new Province())
+    saveReference("NV", "NV", new Province())
+    saveReference("NH", "NH", new Province())
+    saveReference("NJ", "NJ", new Province())
+    saveReference("NM", "NM", new Province())
+    saveReference("NY", "NY", new Province())
+    saveReference("NC", "NC", new Province())
+    saveReference("ND", "ND", new Province())
+    saveReference("OH", "OH", new Province())
+    saveReference("OK", "OK", new Province())
+    saveReference("OR", "OR", new Province())
+    saveReference("PA", "PA", new Province())
+    saveReference("RI", "RI", new Province())
+    saveReference("SC", "SC", new Province())
+    saveReference("SD", "SD", new Province())
+    saveReference("TN", "TN", new Province())
+    saveReference("TX", "TX", new Province())
+    saveReference("UT", "UT", new Province())
+    saveReference("VT", "VT", new Province())
+    saveReference("VA", "VA", new Province())
+    saveReference("WA", "WA", new Province())
+    saveReference("WV", "WV", new Province())
+    saveReference("WI", "WI", new Province())
+    saveReference("WY", "WY", new Province())
+
+    // Create Place Holder
+    String type = PlaceHolderType.OFFER.name()
+    String topObject = TopObjectType.OFFER
+    // Originator Info
+    createPlaceholder(topObject, type, "%originator%", "originator.companyName", "STRING", "Originator's Company Name")
+    createPlaceholder(topObject, type, "%orig_logo%", "originator.logoUrl", "LOGO", "URL to Originator Logo")
+    createPlaceholder(topObject, type, "%orig_addr_line1%", "originator.mailAddress.addressLineOne", "STRING", "Originator's Mailing Address Line 1")
+    createPlaceholder(topObject, type, "%orig_addr_line2%", "originator.mailAddress.addressLineTwo", "STRING", "Originator's Mailing Address Line 2")
+    createPlaceholder(topObject, type, "%orig_city%", "originator.mailAddress.city", "STRING", "Originator's Mailing Address City")
+    createPlaceholder(topObject, type, "%orig_state%", "originator.mailAddress.province.displayValue", "STRING", "Originator's Mailing Address State")
+    // Offer Info
+    createPlaceholder(topObject, type, "%sale_type%", "type", "STRING", "Type of Offer")
+    createPlaceholder(topObject, type, "%sale_subtype%", "subType", "STRING", "Sub Type of Offer")
+    createPlaceholder(topObject, type, "%minimum_subscription_amt%", "minSubscriptionAmt", "MONEY", "Minimum Subscription Amount for Offer")
+    createPlaceholder(topObject, type, "%maximum_coupon%", "maxCouponPct", "STRING", "Maximum Coupon for Offer")
+    createPlaceholder(topObject, type, "%bid_close_date%", "bidCloseDate", "DATE", "Offer Close Date")
+    createPlaceholder(topObject, type, "%offer_id%", "offerId", "STRING", "Offer Id")
+    createPlaceholder(topObject, type, "%minimum_subscription%", "minSubscriptionAmt", "MONEY", "Offer Minimum Subscription Amount")
+    createPlaceholder(topObject, type, "%fill_or_kill_amt%", "fillOrKillAmt", "MONEY", "Offer Fill or Kill Amount")
+    createPlaceholder(topObject, type, "%contract_balance%", "currentContractAmt", "MONEY", "Offer Current Contract Balance")
+    createPlaceholder(topObject, type, "%servicing_fees%", "servicingFeeAmt", "MONEY", "Offer Minimum Subscription Amount")
+    createPlaceholder(topObject, type, "%expected_cum_loss_pct%", "expectedCumulativeLossPct", "PERCENT", "Expected Cumulative Loss Percent")
+    createPlaceholder(topObject, type, "%projected_monthly_yield%", "projectedMonthlyYieldPct", "PERCENT", "Projected Monthly Yield")
+    createPlaceholder(topObject, type, "%projected_bond_yield%", "projectedBondYieldPct", "PERCENT", "Projected Bond Yield")
+    createPlaceholder(topObject, type, "%expected_close_date%", "expectedCloseDate", "DATE", "Expected Close Date")
+  }
+
+  void saveReference(String inValue, String inDisplayValue, def inObject)
+  {
+    inObject.value = inValue
+    inObject.displayValue = inDisplayValue
+    inObject.createUser = "admin"
+    inObject.save()
+  }
+
+  void createIndexes()
+  {
+    createIndex("T-Bill 1 Mo", IndexType.TBILL12.name(), new BigDecimal("22.0"));
+    createIndex("T-Bill 2 Mo", IndexType.TBILL12.name(), new BigDecimal("33.0"));
+    createIndex("T-Bill 3 Mo", IndexType.TBILL12.name(), new BigDecimal("55.0"));
+    createIndex("T-Bill 4 Mo", IndexType.TBILL12.name(), new BigDecimal("666.0"));
+    createIndex("T-Bill 5 Mo", IndexType.TBILL12.name(), new BigDecimal("88888888.0"));
+    createIndex("T-Bill 6 Mo", IndexType.TBILL12.name(), new BigDecimal("777.88888"));
+
+  }
+
+  void createIndex(String inName, String inType, BigDecimal inValue)
+  {
+    TrackedIndex index = new TrackedIndex()
+    index.name = inName
+    index.value = inValue
+    index.type = inType
+    index.save()
+  }
+
+  void createSampleBidder()
+  {
+    Bidder bidder = new Bidder()
+    bidder.affiliate = Affiliate.get(1)
+    bidder.companyName = "Company One"
+    bidder.companyShortName = "Short"
+    bidder.charterNumber = "1234"
+    bidder.mailAddress.addressLineOne = "1 Broadway Ave"
+    bidder.mailAddress.city = "Littleton"
+    bidder.mailAddress.province = Province.get(1)
+    bidder.mailAddress.postalCode = "80130"
+    bidder.primaryContact.phone = "3039998888"
+    bidder.primaryContact.emailAddress = "help@mail.com"
+    bidder.primaryContact.firstName = "John"
+    bidder.primaryContact.lastName = "Big"
+    bidder.companyType = CompanyType.BANK
+    bidder.assetSizeAmt = 2.22
+    bidder.wireBankAddress.addressLineOne = "1234 Harbor Freeway"
+    bidder.wireBankAddress.city = "Long Beach"
+    bidder.wireBankAddress.province = Province.get(1)
+    bidder.wireBankAddress.postalCode = "90909"
+    bidder.wireBankName = "First National"
+    bidder.wireBankPhone = "8008987777"
+    bidder.wireBankRoutingAccount = "19-999"
+    bidder.wireBankRoutingCode = "9898-9987"
+    bidder.contractBeginDate = new Date()
+    bidder.contractEndDate = new Date() + 100
+    bidder.regFlex = true
+    bidder.operatingStates = [Province.get(5), Province.get(5)]
+    bidder.people = [User.get(1)]
+    bidder.charterType = CharterType.FDIC
+    bidder.insuranceType = InsuranceType.ASI
+    bidder.setupFeeAmt = 10.0
+
+    bidder.regFlex = true
+
+
+    if (!bidder.save())
+    {
+      bidder.errors.allErrors.each {
+        println it
+      }
+    }
+    // Now assign admin to id
+    User user = User.get(1)
+    user.bidders = [Bidder.get(1)]
+    if (!user.save())
+    {
+      user.errors.allErrors.each {
+        println it
+      }
+    }
+
+    bidder = new Bidder()
+    bidder.affiliate = Affiliate.get(1)
+    bidder.companyName = "Company Two"
+    bidder.companyShortName = "Short"
+    bidder.charterNumber = "12323"
+    bidder.companyType = CompanyType.CREDIT_UNION
+    bidder.mailAddress.addressLineOne = "1 Park Ave"
+    bidder.mailAddress.city = "Denver"
+    bidder.mailAddress.province = Province.get(1)
+    bidder.mailAddress.postalCode = "80129"
+    bidder.primaryContact.phone = "3039998888"
+    bidder.primaryContact.emailAddress = "help@mail.com"
+    bidder.primaryContact.firstName = "Joe"
+    bidder.primaryContact.lastName = "Dunn"
+    bidder.assetSizeAmt = 2.22
+    bidder.wireBankAddress.addressLineOne = "1234 Harbor Freeway"
+    bidder.wireBankAddress.city = "Long Beach"
+    bidder.wireBankAddress.province = Province.get(1)
+    bidder.wireBankAddress.postalCode = "90909"
+    bidder.wireBankName = "First National"
+    bidder.wireBankPhone = "8008987777"
+    bidder.wireBankRoutingAccount = "19-999"
+    bidder.wireBankRoutingCode = "9898-9987"
+    bidder.contractBeginDate = new Date()
+    bidder.contractEndDate = new Date() + 100
+    bidder.regFlex = true
+    bidder.operatingStates = [Province.get(10), Province.get(12)]
+    bidder.people = [User.get(1)]
+    bidder.charterType = CharterType.FEDERAL
+    bidder.insuranceType = InsuranceType.NCUA
+    bidder.setupFeeAmt = 10.0
+    if (!bidder.save())
+    {
+      bidder.errors.allErrors.each {
+        println it
+      }
+    }
+  }
+
+  void createSampleAffiliate()
+  {
+    Affiliate affiliate = new Affiliate()
+    affiliate.companyName = "Affiliate One"
+    affiliate.mailAddress.addressLineOne = "1 Park Street"
+    affiliate.mailAddress.city = "Chicago"
+    affiliate.mailAddress.province = Province.get(1)
+    affiliate.mailAddress.postalCode = "90808"
+    affiliate.master = true
+    affiliate.contact.firstName = "Steve"
+    affiliate.contact.lastName = "Master"
+    affiliate.contact.phone = "87877763636"
+    affiliate.contact.emailAddress = "jim@mail.com"
+    if (!affiliate.save())
+    {
+      affiliate.errors.allErrors.each {
+        println it
+      }
+    }
+  }
+
+  void createSampleOriginator()
+  {
+    Originator originator = new Originator()
+    originator.affiliate = Affiliate.get(1)
+    originator.companyName = "Company One"
+    originator.companyShortName = "Short One"
+    originator.charterNumber = "1234"
+    originator.mailAddress.addressLineOne = "1 Broadway Ave"
+    originator.mailAddress.city = "Littleton"
+    originator.mailAddress.province = Province.get(1)
+    originator.mailAddress.postalCode = "80130"
+    originator.primaryContact.phone = "3039998888"
+    originator.primaryContact.emailAddress = "help@mail.com"
+    originator.primaryContact.firstName = "John"
+    originator.primaryContact.lastName = "Big"
+    originator.companyType = CompanyType.OTHER
+    originator.assetSizeAmt = 2.22
+    originator.wireBankAddress.addressLineOne = "1234 Harbor Freeway"
+    originator.wireBankAddress.city = "Long Beach"
+    originator.wireBankAddress.province = Province.get(1)
+    originator.wireBankAddress.postalCode = "90909"
+    originator.wireBankName = "First National"
+    originator.wireBankPhone = "8008987777"
+    originator.wireBankRoutingAccount = "19-999"
+    originator.wireBankRoutingCode = "9898-9987"
+    originator.wireForFurtherCreditNumber = "9898-9987"
+    //originator.operatingStates = [Province.get(7), Province.get(9)]
+    originator.charterType = CharterType.OTHER
+    originator.insuranceType = InsuranceType.PRIVATE
+    originator.contractBeginDate = new Date()
+    originator.contractEndDate = new Date() + 100
+    originator.website = "http://www.google.com"
+    originator.setupFeeAmt = 0.0
+    originator.regFlex = true
+    originator.tin = "98774777"
+
+
+    if (!originator.save())
+    {
+      originator.errors.allErrors.each {
+        println it
+      }
+    }
+
+    originator = new Originator()
+    originator.affiliate = Affiliate.get(1)
+    originator.companyName = "Company Two"
+    originator.companyShortName = "Short Two"
+    originator.charterNumber = "12323"
+    originator.companyType = CompanyType.PRIVATE
+    originator.mailAddress.addressLineOne = "1 Park Ave"
+    originator.mailAddress.city = "Denver"
+    originator.mailAddress.province = Province.get(1)
+    originator.mailAddress.postalCode = "80129"
+    originator.primaryContact.phone = "3039998888"
+    originator.primaryContact.emailAddress = "help@mail.com"
+    originator.primaryContact.firstName = "Joe"
+    originator.primaryContact.lastName = "Dunn"
+    originator.assetSizeAmt = 2.22
+    originator.wireBankAddress.addressLineOne = "1234 Harbor Freeway"
+    originator.wireBankAddress.city = "Long Beach"
+    originator.wireBankAddress.province = Province.get(1)
+    originator.wireBankAddress.postalCode = "90909"
+    originator.wireBankName = "First National"
+    originator.wireBankPhone = "8008987777"
+    originator.wireBankRoutingAccount = "19-999"
+    originator.wireBankRoutingCode = "9898-9987"
+    originator.wireForFurtherCreditNumber = "9898-9987"
+    //originator.operatingStates = [Province.get(19), Province.get(29)]
+    originator.charterType = CharterType.FEDERAL
+    originator.insuranceType = InsuranceType.PRIVATE
+    originator.setupFeeAmt = 10.0
+    originator.contractBeginDate = new Date()
+    originator.contractEndDate = new Date() + 100
+    originator.regFlex = true
+    originator.tin = "98774777"
+    if (!originator.save())
+    {
+      originator.errors.allErrors.each {
+        println it
+      }
+    }
+  }
+
+  void createSampleOffer()
+  {
+    Offer offer
+    def y = 30
+    //  while (y-- > 0)
+    // {
+    offer = new Offer()
+    offer.offerId = "Offer One" + y
+    offer.minSubscriptionPct = 10
+    offer.maxSubscriptionPct = 95
+    offer.maxCouponPct = 4.5
+    offer.minPricePct = 100
+    offer.currentContractAmt = 200000
+    offer.participationAmt = 100000
+    offer.bidOpenDate = new Date()
+    offer.bidCloseDate = new Date() + 10
+    offer.status = OfferStatusType.OPEN
+    offer.originator = Originator.get(1)
+    offer.type = OfferType.LOAN_PARTICIPATION
+    offer.subType = OfferSubType.FULL_RECOURSE
+    offer.assetClass = AssetClassType.AUTO
+    offer.lossCoverage = 1.3
+    offer.cleanUpCallPct = 2
+    offer.expectedCloseDate = new Date() + 20
+    offer.expectedCumulativeLossPct = 20
+    offer.expectedAvgLife = 10
+    offer.fillOrKillPct = 10
+    offer.participationPct = 80
+    offer.projectedBondYieldPct = 10
+    offer.projectedMonthlyYieldPct = 22
+    offer.servicer = "Joe"
+    offer.servicingFeesPct = 10
+    offer.subordinationPct = 10
+    offer.amountIncrement = 50
+    offer.couponIncrement = 0.25
+    offer.priceIncrement = 50
+
+    if (!offer.save())
+    {
+      offer.errors.allErrors.each {
+        println it
+      }
+    }
+    //}
+    offer = new Offer()
+    offer.offerId = "Offer Two"
+    offer.minSubscriptionPct = 10
+    offer.maxSubscriptionPct = 90
+    offer.maxCouponPct = 4.3
+    offer.minPricePct = 100
+    offer.bidOpenDate = new Date()
+    offer.bidCloseDate = new Date() + 15
+    offer.status = OfferStatusType.OPEN
+    offer.originator = Originator.get(2)
+    offer.type = OfferType.LOAN_PARTICIPATION
+    offer.subType = OfferSubType.LIMITED_SUBORDINATION
+    offer.assetClass = AssetClassType.AUTO
+    offer.lossCoverage = 1.3
+    offer.cleanUpCallPct = 2
+    offer.expectedCloseDate = new Date() + 20
+    offer.expectedCumulativeLossPct = 20
+    offer.expectedAvgLife = 10
+    offer.fillOrKillPct = 10
+    offer.participationPct = 80
+    offer.projectedBondYieldPct = 10
+    offer.projectedMonthlyYieldPct = 22
+    offer.servicer = "Joe"
+    offer.servicingFeesPct = 10
+    offer.subordinationPct = 10
+    offer.amountIncrement = 50
+    offer.couponIncrement = 0.25
+    offer.priceIncrement = 50
+    if (!offer.save())
+    {
+      offer.errors.allErrors.each {
+        println it
+      }
+    }
+    offer = new Offer()
+    offer.offerId = "Offer Three"
+    offer.minSubscriptionPct = 10
+    offer.maxSubscriptionPct = 90
+    offer.maxCouponPct = 4.3
+    offer.minPricePct = 95
+    offer.bidOpenDate = new Date()
+    offer.bidCloseDate = new Date() + 20
+    offer.status = OfferStatusType.FILLED
+    offer.originator = Originator.get(1)
+    offer.type = OfferType.LOAN_PARTICIPATION
+    offer.subType = OfferSubType.LIMITED_SUBORDINATION
+    offer.assetClass = AssetClassType.AUTO
+    offer.lossCoverage = 1.3
+    offer.cleanUpCallPct = 2
+    offer.expectedCloseDate = new Date() + 20
+    offer.expectedCumulativeLossPct = 20
+    offer.expectedAvgLife = 10
+    offer.fillOrKillPct = 10
+    offer.participationPct = 80
+    offer.projectedBondYieldPct = 10
+    offer.projectedMonthlyYieldPct = 20
+    offer.servicer = "Joe"
+    offer.servicingFeesPct = 10
+    offer.subordinationPct = 10
+    offer.amountIncrement = 50
+    offer.couponIncrement = 0.25
+    offer.priceIncrement = 50
+    if (!offer.save())
+    {
+      offer.errors.allErrors.each {
+        println it
+      }
+    }
+  }
+
+  void createSampleBid()
+  {
+    Bid bid = new Bid()
+    bid.offer = Offer.get(1)
+    bid.status = BidStatusType.ACTIVE
+    bid.bidder = Bidder.get(1)
+    bid.user = User.get(1)
+    bid.pricePct = 100
+    bid.amt = 2000
+    bid.couponPct = 4.3
+    bid.readCircular = true
+    if (!bid.save())
+    {
+      bid.errors.allErrors.each {
+        println it
+      }
+    }
+    bid = new Bid()
+    bid.offer = Offer.get(1)
+    bid.status = BidStatusType.AWARDED
+    bid.bidder = Bidder.get(1)
+    bid.user = User.get(1)
+    bid.pricePct = 100
+    bid.couponPct = 4.2
+    bid.amt = 5000
+    bid.awardedAmt = 5000
+    bid.readCircular = true
+    if (!bid.save())
+    {
+      bid.errors.allErrors.each {
+        println it
+      }
+    }
+    bid = new Bid()
+    bid.offer = Offer.get(1)
+    bid.status = BidStatusType.ACTIVE
+    bid.bidder = Bidder.get(1)
+    bid.user = User.get(1)
+    bid.pricePct = 100
+    bid.couponPct = 4.45
+    bid.amt = 10000
+    bid.readCircular = true
+    if (!bid.save())
+    {
+      bid.errors.allErrors.each {
+        println it
+      }
+    }
+    bid = new Bid()
+    bid.offer = Offer.get(1)
+    bid.status = BidStatusType.AWARDED
+    bid.bidder = Bidder.get(1)
+    bid.user = User.get(1)
+    bid.pricePct = 100
+    bid.amt = 10000
+    bid.awardedAmt = 10000
+    bid.couponPct = 4.2
+    bid.readCircular = true
+    if (!bid.save())
+    {
+      bid.errors.allErrors.each {
+        println it
+      }
+    }
+    bid = new Bid()
+    bid.offer = Offer.get(3)
+    bid.status = BidStatusType.ACTIVE
+    bid.bidder = Bidder.get(2)
+    bid.user = User.get(1)
+    bid.pricePct = 95
+    bid.amt = 10000
+    bid.couponPct = 4.3
+    bid.readCircular = true
+    if (!bid.save())
+    {
+      bid.errors.allErrors.each {
+        println it
+      }
+    }
+  }
+
+  void createRoles()
+  {
+    Role role = new Role()
+    role.authority = "ROLE_MASTER_ADMIN"
+    role.description = "Overall Administator for the System"
+    role.save()
+    role = new Role()
+    role.authority = "ROLE_ADMIN"
+    role.description = "Affiliate Administator for the System"
+    //role.save()
+    role = new Role()
+    role.authority = "ROLE_AXS_USER"
+    role.description = "User of the AXS System"
+    role.save()
+    role = new Role()
+    role.authority = "ROLE_AXS_BIDDER"
+    role.description = "Bidder on the AXS System"
+    //role.save()
+    role = new Role()
+    role.authority = "ROLE_AXS_ORIGINATOR"
+    role.description = "Origintor on the AXS System"
+    // role.save()
+    role = new Role()
+    role.authority = "ROLE_RDS_USER"
+    role.description = "User of the RDS System"
+    // role.save()
+    role = new Role()
+    role.authority = "ROLE_RDS_ORIGINATOR"
+    role.description = "Originator on the RDS System"
+    // role.save()
+    role = new Role()
+    role.authority = "ROLE_RDS_SUBSCRIBER"
+    role.description = "SUBSCRIBER on the RDS System"
+    //role.save()
+    role = new Role()
+    role.authority = "ROLE_DEVELOPMENT"
+    role.description = "Used to control access to new features"
+    role.save()
+  }
+
+  void createRates()
+  {
+    AxsRate rate = new AxsRate()
+    rate.beginAmount = 20000
+    rate.endAmount = 40000
+    rate.percent = 2
+
+    rate.bidder = Bidder.get(1)
+    if (!rate.save())
+    {
+      rate.errors.allErrors.each {
+        println it
+      }
+    }
+    rate = new AxsRate()
+    rate.beginAmount = 40000
+    rate.endAmount = 60000
+    rate.percent = 12
+    rate.bidder = Bidder.get(1)
+    if (!rate.save())
+    {
+      rate.errors.allErrors.each {
+        println it
+      }
+    }
+    rate = new AxsRate()
+    rate.beginAmount = 60000
+    rate.endAmount = 80000
+    rate.percent = 22
+    rate.bidder = Bidder.get(1)
+    if (!rate.save())
+    {
+      rate.errors.allErrors.each {
+        println it
+      }
+    }
+  }
+
+  void createUsers()
+  {
+    User user = new User()
+    user.username = "admin"
+    user.passwd = "21232f297a57a5a743894a0e4a801fc3"
+    user.affiliate = Affiliate.get(1)
+    user.enabled = true
+    user.contact.firstName = "Scott"
+    user.contact.lastName = "Ryan"
+    user.contact.phone = "3032633044"
+    user.contact.mobilePhone = "3032630344"
+    user.contact.emailAddress = "scott@theryansplace.com"
+    user.companyName = "Soaring Eagle L.L.C."
+    user.mailAddress.addressLineOne = "47 Park Ave"
+    user.mailAddress.city = "Long Beach"
+    user.mailAddress.province = Province.get(1)
+    user.mailAddress.postalCode = "90803"
+
+    user.authorities = [Role.get(1)]
+    if (!user.save())
+    {
+      user.errors.allErrors.each {
+        println it
+      }
+    }
+  }
+}

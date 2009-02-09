@@ -1,0 +1,6 @@
+class AutoOfferDetailsTests extends GroovyTestCase {
+
+    void testSomething() {
+
+    }
+}

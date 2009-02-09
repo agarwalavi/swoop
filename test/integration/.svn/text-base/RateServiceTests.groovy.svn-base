@@ -1,0 +1,6 @@
+class RateServiceTests extends GroovyTestCase {
+
+    void testSomething() {
+
+    }
+}

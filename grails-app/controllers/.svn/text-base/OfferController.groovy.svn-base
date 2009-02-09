@@ -1,0 +1,198 @@
+import com.acig.acigweb.reference.OfferStatusType
+import com.acig.acigweb.reference.TextTemplateType
+import com.acig.acigweb.reference.TextCodes
+import org.jfree.chart.ChartFactory
+import org.jfree.data.general.DefaultPieDataset
+import org.jfree.chart.encoders.EncoderUtil
+import java.awt.Font
+import org.jfree.chart.plot.PiePlot
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator
+
+class OfferController extends BaseController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN],
+          delete: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN],
+          update: [Role.MASTER_ADMIN],
+          create: [Role.MASTER_ADMIN],
+          save: [Role.MASTER_ADMIN],
+          circular: [Role.MASTER_ADMIN, Role.AXS_USER],
+          yieldDisclaimer: [Role.MASTER_ADMIN, Role.AXS_USER],
+          stateConcentration: [Role.MASTER_ADMIN, Role.AXS_USER]
+  ]
+  def offerService
+  def bidService
+  def subscriptionService
+  def index = { redirect(action: list, params: params) }
+
+  def stateConcentration = {
+    def offer = Offer.get(params.id)
+
+    def slices = []
+    def states = OfferState.findAllByOffer(offer)
+    states.each {
+      def data = [:]
+      data['label'] = it.state
+      data['percent'] = it.percent
+      slices.add(data)
+    }
+    // create the data for the pie chart
+    // def slices = [[label: "One", percent: 43.2], [label: "Two", percent: 10.0], [label: "Three", percent: 27.5], [label: "Four", percent: 17.5], [label: "Five", percent: 11.0], [label: "Six", percent: 19.4]]
+
+// load the data into a dataset
+    def dataset = new DefaultPieDataset(); slices.each {slice -> dataset.setValue(slice.label, slice.percent) }
+
+// create the pie chart and stream it back to the client
+    def title = offer.offerId
+    def chart = ChartFactory.createPieChart(title, dataset, true, true, false)
+    PiePlot plot = (PiePlot) chart.getPlot();
+    plot.setLabelFont(new Font("SansSerif", Font.PLAIN, 10));
+    plot.setNoDataMessage("No data available");
+    plot.setCircular(true);
+    plot.setLabelGap(0.02);
+    StandardPieSectionLabelGenerator
+    def gen = new StandardPieSectionLabelGenerator("{0} ({2})")
+    plot.setLabelGenerator(gen);
+    EncoderUtil.writeBufferedImage(chart.createBufferedImage(350, 350), "png", response.getOutputStream())
+  }
+
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def list = {
+    boolean canBid = false
+    User userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    if (userInstance?.bidders?.size() > 0)
+    {
+      canBid = true
+    }
+    if (userInstance.originator != null)
+    {
+      params.offer.originator = userInstance.originator
+    }
+    if (!params.max) params.max = 10
+    [offerInstanceList: Offer.list(params), canBid: canBid]
+  }
+
+  def show = {
+    def offerInstance = Offer.get(params.id)
+
+    if (!offerInstance)
+    {
+      flash.message = "Offer not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      User userInstance = User.findByUsername(authenticateService.principal().getUsername())
+      def currentBids = bidService.getCurrentBidList(offerInstance, userInstance)
+      def currentSubscriptions = subscriptionService.getSubscriptionsForOffer(offerInstance)
+      return [offerInstance: offerInstance, currentBids: currentBids, currentSubscriptions: currentSubscriptions]
+    }
+  }
+
+  def delete = {
+    def offerInstance = Offer.get(params.id)
+    if (offerInstance)
+    {
+      offerInstance.enabled = false
+      flash.message = "Offer ${params.id} deleted"
+      redirect(action: list)
+    }
+    else
+    {
+      flash.message = "Offer not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def edit = {
+    def offerInstance = Offer.get(params.id)
+
+    if (!offerInstance)
+    {
+      flash.message = "Offer not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      return [offerInstance: offerInstance]
+    }
+  }
+
+  def update = {
+    def offerInstance = Offer.get(params.id)
+    if (offerInstance)
+    {
+      offerInstance.properties = params
+      if (!offerInstance.hasErrors() && offerInstance.save())
+      {
+        offerService.calculateOfferStatistics(offerInstance)
+        flash.message = "Offer ${params.id} updated"
+        redirect(action: show, id: offerInstance.id)
+      }
+      else
+      {
+        render(view: 'edit', model: [offerInstance: offerInstance])
+      }
+    }
+    else
+    {
+      flash.message = "Offer not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+    }
+  }
+
+  def create = {
+    def offerInstance = new Offer()
+    offerInstance.properties = params
+    return ['offerInstance': offerInstance]
+  }
+
+  def save = {
+    def offerInstance = new Offer(params)
+    offerInstance.status = OfferStatusType.INCOMPLETE
+    if (!offerInstance.hasErrors() && offerInstance.save())
+    {
+      flash.message = "Offer ${offerInstance.id} created"
+      redirect(action: show, id: offerInstance.id)
+    }
+    else
+    {
+      render(view: 'create', model: [offerInstance: offerInstance])
+    }
+  }
+
+  def circular = {
+    User user = User.findByUsername(authenticateService.principal().getUsername())
+    def offer = Offer.get(params.id)
+    String circular = offerService.getCircular(offer, user.affiliate)
+    [text: circular]
+  }
+
+  def yieldDisclaimer = {
+    def text
+    def code = TextCodes.OFFER_YIELD_DISCLAIMER_TEXT
+    User user = User.findByUsername(authenticateService.principal().getUsername())
+    List results = TextTemplate.createCriteria().list {
+      and {
+        eq("code", code)
+        eq("affiliate", user.affiliate)
+      }
+    }
+
+
+    if (results == null || results.size() == 0)
+    {
+      text = "No disclaimer in system"
+    }
+    else
+    {
+      text = results.get(0).text
+    }
+    render(template: '/shared/yieldDisclaimer', model: [text: text])
+  }
+}

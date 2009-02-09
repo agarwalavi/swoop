@@ -1,0 +1,15 @@
+import org.hibernate.Session
+import org.hibernate.Transaction
+import org.springframework.transaction.interceptor.TransactionAspectSupport
+
+class OfferDetailService
+{
+  boolean transactional = true
+  def sessionFactory
+
+  def serviceMethod()
+  {
+  }
+
+  
+}

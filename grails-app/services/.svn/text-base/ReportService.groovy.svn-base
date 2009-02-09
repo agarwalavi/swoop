@@ -1,0 +1,81 @@
+import ar.com.fdvs.dj.core.DynamicJasperHelper
+import ar.com.fdvs.dj.core.layout.ClassicLayoutManager
+import ar.com.fdvs.dj.domain.DynamicReport
+import ar.com.fdvs.dj.domain.builders.FastReportBuilder
+import ar.com.fdvs.dj.domain.constants.Page
+import net.sf.jasperreports.engine.JRDataSource
+import net.sf.jasperreports.engine.JasperPrint
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource
+import com.acig.acigweb.reports.SubscriptionReportSummaryRow
+
+class ReportService
+{
+  boolean transactional = true
+
+  def serviceMethod()
+  {
+  }
+
+  def subscriptionReportSummary(List subscriptionReportSummary)
+  {
+
+
+    //DynamicReportOptions dro = new DynamicReportOptions()
+    //dro.setPage(Page.Page_Letter_Landscape())
+
+    List rows = new ArrayList()
+    SubscriptionReportSummaryRow row = new SubscriptionReportSummaryRow()
+      row.name = "Prin Bal"
+      row.currAmt = new BigDecimal(1000)
+      row.prevAmt = new BigDecimal(1100)
+      rows.add(row)
+
+     FastReportBuilder drb = new FastReportBuilder();
+
+    DynamicReport dr = drb
+            .addColumn("Name", "name",String.class.getName(), 120)
+            .addColumn("Current", "currAmt",BigDecimal.class.getName(), 60)
+            .addColumn("Previous", "prevAmt",BigDecimal.class.getName(), 60)
+            .setTitle("Subscription Report Summary")
+//            .setUseFullPageWidth(true)
+            .setPageSizeAndOrientation(Page.Page_Letter_Landscape())
+            .build();
+
+//      DynamicReportBuilder drb = new DynamicReportBuilder();
+//      DynamicReport dr = drb.setTemplateFile("web-app/reports/SubscriptionReportSummaryTest.jrxml", true, false, false, false).build();
+//      DynamicReport dr = drb.setTemplateFile("generated.jrxml", true, false, false, false).build();
+
+      
+
+      JRDataSource ds = new JRBeanCollectionDataSource(rows);
+
+    // get sub to get list of offers
+    //RptLoanDetail.createCriteria  // replace Offer.list;
+    JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new
+    ClassicLayoutManager(), ds);
+//    DynamicJasperHelper.generateJRXML(dr,new ClassicLayoutManager(),new HashMap(),"UTF-8", "generated.jrxml")
+    return jp
+  }
+
+  def offerSummaryReport(Offer inOffer)
+  {
+    FastReportBuilder drb = new FastReportBuilder();
+
+    DynamicReport dr = drb.addColumn("Offer", "offerId",
+            String.class.getName(), 30).addColumn("Servicer", "servicer",
+            String.class.getName(), 30).addColumn("Type", "type",
+            String.class.getName(), 100).
+            setTitle("My Favorite Books").
+            setUseFullPageWidth(true).
+            setPageSizeAndOrientation(Page.Page_Letter_Landscape()).
+            build();
+
+    JRDataSource ds = new JRBeanCollectionDataSource(Offer.list());
+
+    JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new
+    ClassicLayoutManager(), ds);
+
+
+    return jp
+  }
+}

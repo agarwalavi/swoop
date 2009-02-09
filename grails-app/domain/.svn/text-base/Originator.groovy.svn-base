@@ -1,0 +1,101 @@
+import com.acig.acigweb.reference.CharterType
+import com.acig.acigweb.reference.InsuranceType
+import com.acig.acigweb.reference.CompanyType
+
+class Originator extends BaseDomain implements Serializable
+{
+  static constraints = {
+    tin(nullable: true, blank: true, maxSize: 50)
+    userRating(nullable: true)
+    rating(nullable: true, scale: 2)
+    charterType(nullable: false, blank: false, inList: CharterType.getList(), maxSize: 100)
+    insuranceType(nullable: false, blank: false, inList: InsuranceType.getList(), maxSize: 100)
+    affiliate(nullable: false)
+    companyName(nullable: false, blank: false, maxSize: 100)
+    companyShortName(nullable: false, blank: false, maxSize: 25)
+    charterNumber(nullable: true, blank: true, maxSize: 100)
+    companyType(nullable: false, blank: false, inList: CompanyType.getList(), maxSize: 100)
+    website(nullable: true, blank: true, url: true)
+    assetSizeAmt(nullable: false, scale: 2)
+    netWorthRatioPct(nullable: true, range: 0..100, scale: 2)
+    regFlex(nullable: false)
+    wireBankName(nullable: false, blank: false, maxSize: 100)
+    wireBankPhone(nullable: false, blank: false, maxSize: 25)
+    wireBankRoutingCode(nullable: false, blank: false, maxSize: 100)
+    wireBankRoutingAccount(nullable: false, blank: false, maxSize: 100)
+    wireForFurtherCreditNumber(nullable: true, blank: true, maxSize: 100)
+    camelRating(nullable: true, blank: true, range: 1..5, scale: 0)
+    enabled(nullable: false)
+    logoUrl(nullable: true, blank: true, maxSize: 255)
+    setupFeeAmt(nullable: false, scale: 2)
+    axsMonthlyFeeAmt(nullable: true, scale: 2)
+    axsRatePerLoanAmt(nullable: true, scale: 2)
+    axsRatePct(nullable: true, range: 0..100, scale: 3)
+    rdsMonthlyFeeAmt(nullable: true, scale: 2)
+    rdsRatePct(nullable: true, range: 0..100, scale: 3)
+    rdsRatePerLoanAmt(nullable: true, scale: 2)
+    cumulativeFeeSchedule(nullable: true, scale: 2)
+    dueDiligenceFeeAmt(nullable: true, scale: 2)
+    otherFeeAmt(nullable: true, scale: 2)
+    contractEndDate(nullable: true)
+    contractBeginDate(nullable: true)
+    fieldOfMembership(nullable: true, blank: true, maxSize: 255)
+  }
+  // Use for indexes
+  static mapping = {
+    columns {
+      companyName index: 'ORIG_COMPANY_NAME_IDX'
+      // This is reversed on purpose to support grails 1.0.4 mapping bug
+      operatingStates(column: 'originator_id')
+    }
+  }
+  static hasMany = [offers: Offer]
+  static embedded = ['mailAddress', 'primaryContact', 'wireBankAddress']
+  String tin
+  BigDecimal userRating
+  String rating
+  String charterType
+  String insuranceType
+  Affiliate affiliate
+  String companyName
+  String companyShortName
+  String charterNumber
+  String companyType
+  Contact primaryContact = new Contact()
+  Address mailAddress = new Address()
+  String website
+  BigDecimal assetSizeAmt
+  BigDecimal netWorthRatioPct
+  Boolean regFlex
+  String wireBankName
+  Address wireBankAddress = new Address()
+  String wireBankPhone
+  String wireBankRoutingCode
+  String wireBankRoutingAccount
+  String wireForFurtherCreditNumber
+  Integer camelRating
+  Boolean enabled = true
+  String logoUrl
+  BigDecimal setupFeeAmt
+  BigDecimal axsMonthlyFeeAmt
+  BigDecimal axsRatePerLoanAmt
+  BigDecimal axsRatePct
+  BigDecimal rdsMonthlyFeeAmt
+  BigDecimal rdsRatePct
+  BigDecimal rdsRatePerLoanAmt
+  Boolean cumulativeFeeSchedule
+  BigDecimal dueDiligenceFeeAmt
+  BigDecimal otherFeeAmt
+  Date contractEndDate
+  Date contractBeginDate
+  String fieldOfMembership
+
+  def getStateString()
+  {
+    ""
+  }
+}
+
+
+
+

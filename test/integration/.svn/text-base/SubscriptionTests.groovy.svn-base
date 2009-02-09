@@ -1,0 +1,6 @@
+class SubscriptionTests extends GroovyTestCase {
+
+    void testSomething() {
+
+    }
+}

@@ -1,0 +1,122 @@
+class BidderController extends BaseController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN],
+          delete: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN],
+          update: [Role.MASTER_ADMIN],
+          create: [Role.MASTER_ADMIN],
+          save: [Role.MASTER_ADMIN]
+  ]
+  def index = { redirect(action: list, params: params) }
+
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def list = {
+    User userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    if (!params.max) params.max = 10
+    if (!params.offset) params.offset = 0
+    def list = Bidder.createCriteria().listDistinct() {
+      and {
+        if (!ifAnyGranted(Role.MASTER_ADMIN))
+        {
+          //  Only in your affiliate
+          eq('affiliate.id', userInstance.affiliate.id)
+        }
+        eq('enabled', true)
+        maxResults(params.max)
+        firstResult(params.offset)
+      }
+    }
+    [bidderInstanceList: list]
+  }
+
+  def show = {
+    def bidderInstance = Bidder.get(params.id)
+
+    if (!bidderInstance)
+    {
+      flash.message = "Bidder not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    { return [bidderInstance: bidderInstance] }
+  }
+
+  def delete = {
+    def bidderInstance = Bidder.get(params.id)
+    if (bidderInstance)
+    {
+      bidderInstance.enabled = false
+      flash.message = "Bidder ${params.id} deleted"
+      redirect(action: list)
+    }
+    else
+    {
+      flash.message = "Bidder not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def edit = {
+    def bidderInstance = Bidder.get(params.id)
+
+    if (!bidderInstance)
+    {
+      flash.message = "Bidder not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      return [bidderInstance: bidderInstance]
+    }
+  }
+
+  def update = {
+    def bidderInstance = Bidder.get(params.id)
+    if (bidderInstance)
+    {
+      bidderInstance.properties = params
+      if (!bidderInstance.hasErrors() && bidderInstance.save())
+      {
+        flash.message = "Bidder ${params.id} updated"
+        redirect(action: show, id: bidderInstance.id)
+      }
+      else
+      {
+        render(view: 'edit', model: [bidderInstance: bidderInstance])
+      }
+    }
+    else
+    {
+      flash.message = "Bidder not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+    }
+  }
+
+  def create = {
+    def bidderInstance = new Bidder()
+    // Create 3 of the pricing objects
+    3.times {bidderInstance.addToAxsRates(new AxsRate())}
+    return ['bidderInstance': bidderInstance]
+  }
+
+  def save = {
+    def bidderInstance = new Bidder()
+    // Create 3 of the pricing objects
+    3.times {bidderInstance.addToAxsRates(new AxsRate())}
+    bidderInstance.properties = params
+    if (!bidderInstance.hasErrors() && bidderInstance.save())
+    {
+      flash.message = "Bidder ${bidderInstance.id} created"
+      redirect(action: show, id: bidderInstance.id)
+    }
+    else
+    {
+      render(view: 'create', model: [bidderInstance: bidderInstance])
+    }
+  }
+}

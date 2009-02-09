@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/cmmc/!svn/ver/155/trunk/acig/acigweb/grails-app/jobs
+END
+ContractStatusJob.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/cmmc/!svn/ver/148/trunk/acig/acigweb/grails-app/jobs/ContractStatusJob.groovy
+END
+IndexUpdateJob.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/cmmc/!svn/ver/155/trunk/acig/acigweb/grails-app/jobs/IndexUpdateJob.groovy
+END

@@ -1,0 +1,55 @@
+public class RptLoanDetail
+{
+  static constraints = {
+    offer(nullable: false)
+    asOfDate(nullable: false)
+    accountNumber(nullable: false, blank: false)
+    fico(nullable: false)
+    contractDate(nullable: false)
+    firstPaymentDueDate(nullable: false)
+    nextDueDate(nullable: false)
+    maturityDate(nullable: false)
+    originalTerm(nullable: false)
+    remainingTerm(nullable: false)
+    loanAmt(nullable: false)
+    previousMonthBalanceAmt(nullable: false)
+    mtdPrincipalPaidAmt(nullable: false)
+    principalAdjustmentDebitAmt(nullable: false)
+    principalAdjustmentCreditAmt(nullable: false)
+    outstandingBalanceAmt(nullable: false)
+    scheduledPaymentAmt(nullable: false)
+    itdPrincipalRepaidAmt(nullable: false)
+    daysPastDue(nullable: false)
+    termFrequency(nullable: false, blank: false)
+    collateralType(nullable: false, blank: false)
+    collateralReferenceNumber(nullable: false, blank: false)
+    collateralDescription(nullable: false, blank: false)
+    notes(nullable: false, blank: false)
+    newAuto(nullable: false)
+  }
+  Offer offer
+  Date asOfDate
+  String accountNumber
+  Integer fico
+  Date contractDate
+  Date firstPaymentDueDate
+  Date nextDueDate
+  Date maturityDate
+  Integer originalTerm
+  Integer remainingTerm
+  BigDecimal loanAmt
+  BigDecimal previousMonthBalanceAmt
+  BigDecimal mtdPrincipalPaidAmt
+  BigDecimal principalAdjustmentDebitAmt
+  BigDecimal principalAdjustmentCreditAmt
+  BigDecimal outstandingBalanceAmt
+  BigDecimal scheduledPaymentAmt
+  BigDecimal itdPrincipalRepaidAmt
+  Integer daysPastDue
+  String termFrequency
+  Boolean newAuto
+  String collateralType
+  String collateralReferenceNumber
+  String collateralDescription
+  String notes
+}

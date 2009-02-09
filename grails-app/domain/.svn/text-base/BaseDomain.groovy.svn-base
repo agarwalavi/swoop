@@ -1,0 +1,35 @@
+import org.grails.plugins.springsecurity.service.AuthenticateService
+
+public abstract class BaseDomain {
+  static constraints = {
+    dateCreated(nullable: true)
+    createUser(nullable: true)
+    lastUpdated(nullable: true)
+    updateUser(nullable: true)
+  }
+  transient def authenticateService
+  Date dateCreated
+  String createUser
+  Date lastUpdated
+  String updateUser
+  transient def beforeInsert = {
+
+    if (authenticateService != null) {
+      def principal = authenticateService.principal()
+      createUser = principal.getUsername()
+    }
+    else {
+      updateUser = "Unknown"
+    }
+  }
+  transient def beforeUpdate = {
+  
+    if (authenticateService != null) {
+      def principal = authenticateService.principal()
+      updateUser = principal.getUsername()
+    }
+    else {
+      updateUser = "Unknown"
+    }
+  }
+}

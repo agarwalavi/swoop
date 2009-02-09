@@ -1,0 +1,158 @@
+class AutoOfferDetailController extends BaseController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN],
+          delete: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN],
+          update: [Role.MASTER_ADMIN],
+          create: [Role.MASTER_ADMIN],
+          save: [Role.MASTER_ADMIN],
+          upload: [Role.MASTER_ADMIN]
+
+  ]
+  def index = { redirect(action: list, params: params) }
+  def dataLoadingService
+  def offerService
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def list = {
+    // See if there is an offer id in the request
+    Offer offer
+    def offerId = params.offerId
+
+    if (offerId != null && offerId.length() > 0)
+    {
+      offer = Offer.get(offerId)
+      // TODO Only get results for current offer we get the correct detail records
+    }
+    if (!params.max) params.max = 10
+    [autoOfferDetailInstanceList: AutoOfferDetail.list(params), offer: offer]
+  }
+
+
+  def show = {
+    def autoOfferDetailInstance = AutoOfferDetail.get(params.id)
+
+    if (!autoOfferDetailInstance)
+    {
+      flash.message = "AutoOfferDetail not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    { return [autoOfferDetailInstance: autoOfferDetailInstance] }
+  }
+
+  def delete = {
+    def autoOfferDetailInstance = AutoOfferDetail.get(params.id)
+    if (autoOfferDetailInstance)
+    {
+      autoOfferDetailInstance.delete()
+      flash.message = "AutoOfferDetail ${params.id} deleted"
+      redirect(action: list)
+    }
+    else
+    {
+      flash.message = "AutoOfferDetail not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def edit = {
+    def autoOfferDetailInstance = AutoOfferDetail.get(params.id)
+
+    if (!autoOfferDetailInstance)
+    {
+      flash.message = "AutoOfferDetail not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      return [autoOfferDetailInstance: autoOfferDetailInstance]
+    }
+  }
+
+  def update = {
+    def autoOfferDetailInstance = AutoOfferDetail.get(params.id)
+    if (autoOfferDetailInstance)
+    {
+      autoOfferDetailInstance.properties = params
+      if (!autoOfferDetailInstance.hasErrors() && autoOfferDetailInstance.save())
+      {
+        flash.message = "AutoOfferDetail ${params.id} updated"
+        redirect(action: show, id: autoOfferDetailInstance.id)
+      }
+      else
+      {
+        render(view: 'edit', model: [autoOfferDetailInstance: autoOfferDetailInstance])
+      }
+    }
+    else
+    {
+      flash.message = "AutoOfferDetail not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+    }
+  }
+
+  def create = {
+    def autoOfferDetailInstance = new AutoOfferDetail()
+    autoOfferDetailInstance.properties = params
+    return ['autoOfferDetailInstance': autoOfferDetailInstance]
+  }
+
+  def save = {
+    def autoOfferDetailInstance = new AutoOfferDetail(params)
+    if (!autoOfferDetailInstance.hasErrors() && autoOfferDetailInstance.save())
+    {
+      flash.message = "AutoOfferDetail ${autoOfferDetailInstance.id} created"
+      redirect(action: show, id: autoOfferDetailInstance.id)
+    }
+    else
+    {
+      render(view: 'create', model: [autoOfferDetailInstance: autoOfferDetailInstance])
+    }
+  }
+  def upload = {
+    def f = request.getFile('dataFile')
+    def offerId = params.offerId
+    Offer offer = Offer.get(offerId)
+    def errors = [:]
+    if (!f.empty)
+    {
+      try
+      {
+        errors = dataLoadingService.loadOfferData(f.getInputStream(), offer, "yyyyMMdd")
+      }
+      catch (Exception ex)
+      {
+        println " caught exception" + ex
+        flash.error = "exception occured"
+        return
+      }
+      def badLines = errors["BADLINES"]
+      def successCount = errors["SUCCESSCOUNT"]
+      def lineCount = errors["TOTALLINES"]
+      if (badLines == null || badLines.size() == 0)
+      {
+        flash.message = successCount + " Lines were successfully imported of a total of " + lineCount
+      }
+      else
+      {
+        flash.error = "Data was not imported due to Erorrs in input data.  Please correct and try again."
+      }
+      offerService.calculateOfferStatistics(offer)
+    }
+    else
+    {
+      flash.error = "You must select a file to upload."
+    }
+
+    if (!params.max) params.max = 10
+
+    // TODO Only get results for current offer we get the correct detail records
+    def map = [autoOfferDetailInstanceList: AutoOfferDetail.list(params), offer: offer, offerId: offerId, errors: errors]
+    render(view: 'list', model: map)
+  }
+}

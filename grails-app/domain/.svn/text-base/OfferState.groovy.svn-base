@@ -1,0 +1,12 @@
+public class OfferState extends BaseDomain implements Serializable
+{
+  static constraints = {
+    offer(nullable: false, unique: ['state'])
+    state(nullable: false, blank: false)
+    percent(nullable: false, scale: 2, range: 0..100)
+  }
+  def belongsTo = Offer
+  Offer offer
+  String state
+  BigDecimal percent
+}

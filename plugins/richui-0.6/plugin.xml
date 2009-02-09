@@ -1,0 +1,40 @@
+<plugin name='richui' version='0.6'>
+  <author>Andreas Schmitt</author>
+  <authorEmail>andreas.schmitt.mi@gmail.com</authorEmail>
+  <title>Provides a set of AJAX components</title>
+  <description>
+Provides a set of AJAX components
+</description>
+  <documentation>http://grails.org/RichUI+Plugin</documentation>
+  <resources>
+    <resource>CheckedTreeViewTagLib</resource>
+    <resource>CalendarDayViewTagLib</resource>
+    <resource>CarouselTagLib</resource>
+    <resource>RichTextEditorTagLib</resource>
+    <resource>FlowTagLib</resource>
+    <resource>CalendarWeekViewTagLib</resource>
+    <resource>SliderTagLib</resource>
+    <resource>TooltipTagLib</resource>
+    <resource>RatingTagLib</resource>
+    <resource>TabViewTagLib</resource>
+    <resource>CalendarMonthViewTagLib</resource>
+    <resource>PortletTagLib</resource>
+    <resource>ReflectionImageTagLib</resource>
+    <resource>AccordionTagLib</resource>
+    <resource>GoogleMapsTagLib</resource>
+    <resource>DateChooserTagLib</resource>
+    <resource>ProgressBarTagLib</resource>
+    <resource>RichUIResourceTagLib</resource>
+    <resource>TreeViewTagLib</resource>
+    <resource>AutoCompleteTagLib</resource>
+    <resource>MapTagLib</resource>
+    <resource>TagCloudTagLib</resource>
+    <resource>TimelineTagLib</resource>
+    <resource>FontTagLib</resource>
+    <resource>RichUIUtilTagLib</resource>
+    <resource>FontImageService</resource>
+    <resource>UrlMappings</resource>
+    <resource>RichuiConfig</resource>
+    <resource>FontImageController</resource>
+  </resources>
+</plugin>

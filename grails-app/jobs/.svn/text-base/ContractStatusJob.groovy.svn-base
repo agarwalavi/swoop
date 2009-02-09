@@ -1,0 +1,11 @@
+class ContractStatusJob
+{
+  def startDelay = 60000
+  def cronExpression = "0 0 0 * * ?"
+  def group = "WebServiceGroup"
+
+  def execute()
+  {
+    println " Checking all bidder and originator contract statuses ";
+  }
+}

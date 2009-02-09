@@ -1,0 +1,15 @@
+public class OriginatorService
+{
+  boolean transactional = true
+
+  def serviceMethod()
+  {
+  }
+  List getOriginatorList(User inUser)
+  {
+    // TODO check by role
+    // TODO filter by affiliate
+    return Originator.findAll("from Originator as o")
+
+  }
+}

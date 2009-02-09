@@ -1,0 +1,55 @@
+<div id="summaryData" class="span-24 last">
+  <div id="originatorSummary" class="span-24 last">
+    <div class="summaryHeading span-24 last"><g:message code="originator.summaryHeading"/></div>
+    <div id="address" class="span-24 last">
+      <div id="addressBox">
+        <div>
+          <div id="addressLeft">
+            <div id="companyName">${originator.companyName}</div>
+            <div class="addressLine">${originator.mailAddress.addressLineOne}</div>
+            <div class="addressLine">${originator.mailAddress.addressLineTwo}</div>
+            <div class="addressLine">${originator.mailAddress.city},&nbsp;${originator.mailAddress.province.displayValue}&nbsp;${originator.mailAddress.postalCode}</div>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+          </div>
+          <div id="addressMiddle">
+            <g:acigOutputValue id="originator.companyType" type="ENUM" label="originator.companyType" value="${originator?.companyType}"/>
+            <g:acigOutputValue id="originator.charterType" type="ENUM" label="originator.charterType" value="${originator?.charterType}"/>
+            <g:acigOutputValue id="originator.insuranceType" type="ENUM" label="originator.insuranceType" value="${originator?.insuranceType}"/>
+            <div id="originator.financialReport" class="output-label-element" style="display: inline;">
+              <g:message code="originator.financialSite.label"/>
+            </div>
+            <div class="output-value-element" style="display: inline;">
+              <a href="http://www.ncua.gov/indexdata.html" target="_blank">
+                <g:message code="originator.financialSite.link.label"/>
+              </a>
+            </div>
+            <g:acigOutputValue id="originator.assetSizeAmt" type="NUMBER" label="originator.assetSizeAmt" value="${originator?.assetSizeAmt}"/>
+            <g:acigOutputValue id="originator.netWorthRatioPct" type="PERCENT" label="originator.netWorthRatioPct" value="${originator?.netWorthRatioPct}"/>
+            <div>&nbsp;</div>
+          </div>
+          <div id="addressRight">
+            <div>Logo</div>
+            <div>
+              <p><g:if test="${originator.website != null && originator.website.length() > 0}">
+                <a href="${originator.website}" target="_blank"><g:message code="originator.website.label"/></a>
+              </g:if>
+                <g:else>&nbsp;</g:else>
+              </p>
+            </div>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="data" class="span-24 last">
+      <div>&nbsp;</div>
+
+    </div>
+  </div>
+</div>

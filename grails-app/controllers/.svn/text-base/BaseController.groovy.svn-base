@@ -1,0 +1,34 @@
+import org.grails.plugins.springsecurity.controller.AuthBase
+
+public abstract class BaseController extends AuthBase
+{
+  boolean ifAnyGranted(String inRoles)
+  {
+    boolean isTrue = false
+    g.ifAnyGranted(role: inRoles)
+            {
+              isTrue = true
+            }
+    return isTrue
+  }
+
+  boolean ifAllGranted(String inRoles)
+  {
+    boolean isTrue = false
+    g.ifAllGranted(role: inRoles)
+            {
+              isTrue = true
+            }
+    return isTrue
+  }
+
+  boolean ifNotGranted(String inRoles)
+  {
+    boolean isTrue = false
+    g.ifNotGranted(role: inRoles)
+            {
+              isTrue = true
+            }
+    return isTrue
+  }
+}

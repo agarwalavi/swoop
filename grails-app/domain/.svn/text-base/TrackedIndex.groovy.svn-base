@@ -1,0 +1,15 @@
+import com.acig.acigweb.reference.IndexType
+
+public class TrackedIndex extends BaseDomain implements Serializable
+{
+  static constraints = {
+    name(nullable: false, blank: false, maxSize: 100)
+    value(nullable: false, blank: false, scale: 3)
+    type(nullable: true, blank: true, inList: IndexType.getList(), maxSize: 100)
+    url(nullable: true, blank: true)
+  }
+  String name
+  String type
+  String url
+  BigDecimal value
+}

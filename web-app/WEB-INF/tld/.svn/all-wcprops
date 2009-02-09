@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/cmmc/!svn/ver/124/trunk/acig/acigweb/web-app/WEB-INF/tld
+END
+c.tld
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/cmmc/!svn/ver/124/trunk/acig/acigweb/web-app/WEB-INF/tld/c.tld
+END
+grails.tld
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/cmmc/!svn/ver/124/trunk/acig/acigweb/web-app/WEB-INF/tld/grails.tld
+END
+fmt.tld
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/cmmc/!svn/ver/124/trunk/acig/acigweb/web-app/WEB-INF/tld/fmt.tld
+END
+spring.tld
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/cmmc/!svn/ver/124/trunk/acig/acigweb/web-app/WEB-INF/tld/spring.tld
+END

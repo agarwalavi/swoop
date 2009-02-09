@@ -1,0 +1,104 @@
+class PlaceHolderController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN],
+          delete: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN],
+          update: [Role.MASTER_ADMIN],
+          create: [Role.MASTER_ADMIN],
+          save: [Role.MASTER_ADMIN]
+  ]
+  def index = { redirect(action: list, params: params) }
+
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def list = {
+    if (!params.max) params.max = 10
+    [placeHolderInstanceList: PlaceHolder.list(params)]
+  }
+
+  def show = {
+    def placeHolderInstance = PlaceHolder.get(params.id)
+
+    if (!placeHolderInstance)
+    {
+      flash.message = "PlaceHolder not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    { return [placeHolderInstance: placeHolderInstance] }
+  }
+
+  def delete = {
+    def placeHolderInstance = PlaceHolder.get(params.id)
+    if (placeHolderInstance)
+    {
+      placeHolderInstance.delete()
+      flash.message = "PlaceHolder ${params.id} deleted"
+      redirect(action: list)
+    }
+    else
+    {
+      flash.message = "PlaceHolder not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def edit = {
+    def placeHolderInstance = PlaceHolder.get(params.id)
+
+    if (!placeHolderInstance)
+    {
+      flash.message = "PlaceHolder not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      return [placeHolderInstance: placeHolderInstance]
+    }
+  }
+
+  def update = {
+    def placeHolderInstance = PlaceHolder.get(params.id)
+    if (placeHolderInstance)
+    {
+      placeHolderInstance.properties = params
+      if (!placeHolderInstance.hasErrors() && placeHolderInstance.save())
+      {
+        flash.message = "PlaceHolder ${params.id} updated"
+        redirect(action: show, id: placeHolderInstance.id)
+      }
+      else
+      {
+        render(view: 'edit', model: [placeHolderInstance: placeHolderInstance])
+      }
+    }
+    else
+    {
+      flash.message = "PlaceHolder not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+    }
+  }
+
+  def create = {
+    def placeHolderInstance = new PlaceHolder()
+    placeHolderInstance.properties = params
+    return ['placeHolderInstance': placeHolderInstance]
+  }
+
+  def save = {
+    def placeHolderInstance = new PlaceHolder(params)
+    if (!placeHolderInstance.hasErrors() && placeHolderInstance.save())
+    {
+      flash.message = "PlaceHolder ${placeHolderInstance.id} created"
+      redirect(action: show, id: placeHolderInstance.id)
+    }
+    else
+    {
+      render(view: 'create', model: [placeHolderInstance: placeHolderInstance])
+    }
+  }
+}

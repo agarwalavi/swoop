@@ -1,0 +1,6 @@
+class TextTemplateTests extends GroovyTestCase {
+
+    void testSomething() {
+
+    }
+}

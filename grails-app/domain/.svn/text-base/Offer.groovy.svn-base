@@ -1,0 +1,178 @@
+import com.acig.acigweb.reference.OfferType
+import com.acig.acigweb.reference.OfferSubType
+import com.acig.acigweb.reference.AssetClassType
+import com.acig.acigweb.reference.OfferStatusType
+
+
+class Offer extends BaseDomain implements Serializable
+{
+  static constraints = {
+    offerId(nullable: false, blank: false, maxSize: 100)
+    blindAuction(nullable: false)
+    blindBid(nullable: false)
+    bidOpenDate(nullable: false)
+    bidCloseDate(nullable: false, validator: {value, offer ->
+      value >= offer.bidOpenDate
+    })
+    expectedCloseDate(nullable: false)
+    siteVisitDate(nullable: true)
+    priceIncrement(nullable:false)
+    couponIncrement(nullable:false)
+    amountIncrement(nullable:false)
+    type(nullable: false, blank: false, inList: OfferType.getList(), maxSize: 100)
+    subType(nullable: false, blank: false, inList: OfferSubType.getList(), maxSize: 100)
+    assetClass(nullable: false, blank: false, inList: AssetClassType.getList(), maxSize: 100)
+    status(nullable: false, blank: false, inList: OfferStatusType.getList(), maxSize: 100)
+    originator(nullable: false)
+    fillOrKillPct(nullable: false, range: 0..100, scale: 2)
+    participationPct(nullable: false, range: 0..100, scale: 2)
+    maxNumberOfParticipants(nullable: true)
+    maxCouponPct(nullable: false, range: 0..100, scale: 2)
+    minSubscriptionPct(nullable: false, range: 0..100, scale: 2)
+    maxSubscriptionPct(nullable: false, range: 0..100, scale: 2)
+    expectedCumulativeLossPct(nullable: false, range: 0..100, scale: 2)
+    minPricePct(nullable: false, range: 0..1000, scale: 2)
+    servicingFeesPct(nullable: false, range: 0..100, scale: 2)
+    subordinationPct(nullable: false, range: 0..100, scale: 2)
+    projectedMonthlyYieldPct(nullable: false, range: 0..100, scale: 2)
+    projectedBondYieldPct(nullable: false, range: 0..100, scale: 2)
+    expectedAvgLife(nullable: false, scale: 2)
+    cleanUpCallPct(nullable: false, range: 0..100, scale: 2)
+    servicer(nullable: false, blank: false, maxSize: 100)
+    notes(nullable: true, blank: true, maxSize: 255)
+
+    // These values are calculated
+    contractBalanceDayOfSale(nullable: true, scale: 2)
+    participationAmt(nullable: true, scale: 2)
+    minSubscriptionAmt(nullable: true, scale: 2)
+    maxSubscriptionAmt(nullable: true, scale: 2)
+    fillOrKillAmt(nullable: true, scale: 2)
+    currentContractAmt(nullable: true, scale: 2)
+    originalContractAmt(nullable: true, scale: 2)
+    avgLoanAmt(nullable: true, scale: 2)
+    minLoanAmt(nullable: true, scale: 2)
+    maxLoanAmt(nullable: true, scale: 2)
+    avgLoanBalanceAmt(nullable: true, scale: 2)
+    minLoanBalanceAmt(nullable: true, scale: 2)
+    maxLoanBalanceAmt(nullable: true, scale: 2)
+    avgPaymentAmt(nullable: true, scale: 2)
+    loanCount(nullable: true, scale: 0)
+    avgAPRPct(nullable: true, range: 0..100, scale: 2)
+    avgTerm(nullable: true, scale: 2)
+    avgMonthsRemaining(nullable: true, scale: 2)
+    minFico(nullable: true, scale: 0)
+    maxFico(nullable: true, scale: 0)
+    avgFico(nullable: true, scale: 0)
+    lossCoverage(nullable: true, scale: 2)
+    stateConcentration(nullable: true, blank: true, maxSize: 255)
+    // This is calculated for auto offers only
+    avgNewPct(nullable: true, range: 0..100, scale: 2)
+    avgUsedPct(nullable: true, range: 0..100, scale: 2)
+    yieldImpactFromLossPct(nullable: true, scale: 2)
+    yieldImpactFromAgencyFeesPct(nullable: true, scale: 2)
+    projectedNetYieldPct(nullable: true, range: 0..100, scale: 2)
+    recourseDays(nullable: true)
+    // Will be used to store final circular
+    circular(nullable: true, blank: true, maxSize: 60000)
+  }
+  // Use for indexes
+  static mapping = {
+    columns {
+      loanCount index: 'OFFER_LOAN_COUNT_IDX'
+      bidCloseDate index: 'OFFER_BID_CLOSE_DATE_IDX'
+    }
+  }
+  static hasMany = [subscriptions: Subscription, autoOfferDetails: AutoOfferDetail]
+  String offerId
+  Boolean blindAuction = false
+  Boolean blindBid = false
+  Date bidOpenDate
+  Date bidCloseDate
+  Date expectedCloseDate
+  Date siteVisitDate
+  String type
+  String subType
+  String assetClass
+  String status
+  Originator originator
+  BigDecimal fillOrKillPct
+  BigDecimal participationPct
+  BigDecimal amountIncrement
+  Integer maxNumberOfParticipants
+  BigDecimal maxCouponPct
+  BigDecimal couponIncrement
+  BigDecimal minSubscriptionPct
+  BigDecimal maxSubscriptionPct
+  BigDecimal expectedCumulativeLossPct
+  BigDecimal minPricePct
+  BigDecimal priceIncrement
+  BigDecimal servicingFeesPct
+  BigDecimal subordinationPct
+  BigDecimal projectedMonthlyYieldPct
+  BigDecimal projectedBondYieldPct
+  BigDecimal expectedAvgLife
+  BigDecimal cleanUpCallPct
+  String servicer
+  String notes
+  String circular
+  // These values are calculated
+  BigDecimal participationAmt
+  BigDecimal minSubscriptionAmt
+  BigDecimal maxSubscriptionAmt
+  BigDecimal fillOrKillAmt
+  BigDecimal currentContractAmt
+  BigDecimal originalContractAmt
+  BigDecimal contractBalanceDayOfSale
+  BigDecimal avgLoanAmt
+  BigDecimal minLoanAmt
+  BigDecimal maxLoanAmt
+  BigDecimal avgLoanBalanceAmt
+  BigDecimal minLoanBalanceAmt
+  BigDecimal maxLoanBalanceAmt
+  BigDecimal avgPaymentAmt
+  Integer loanCount
+  BigDecimal avgAPRPct
+  BigDecimal avgTerm
+  BigDecimal avgMonthsRemaining
+  Integer minFico
+  Integer maxFico
+  BigDecimal avgFico
+  BigDecimal lossCoverage
+  String stateConcentration
+  BigDecimal yieldImpactFromLossPct
+  BigDecimal yieldImpactFromAgencyFeesPct
+  BigDecimal projectedNetYieldPct
+  Integer recourseDays
+
+// This is calculated for auto offers only
+  BigDecimal avgNewPct
+  BigDecimal avgUsedPct
+
+  def getShortType()
+  {
+    if (type.equalsIgnoreCase(OfferType.LOAN_PARTICIPATION.name()) && subType.equalsIgnoreCase(OfferSubType.NON_RECOURSE.name()))
+    {
+      return "LP-NR"
+    }
+    if (type.equalsIgnoreCase(OfferType.LOAN_PARTICIPATION.name()) && subType.equalsIgnoreCase(OfferSubType.FULL_RECOURSE.name()))
+    {
+      return "LP-FR"
+    }
+    if (type.equalsIgnoreCase(OfferType.LOAN_PARTICIPATION.name()) && subType.equalsIgnoreCase(OfferSubType.LIMITED_SUBORDINATION.name()))
+    {
+      return "LP-LS"
+    }
+    if (type.equalsIgnoreCase(OfferType.LOAN_PARTICIPATION.name()) && subType.equalsIgnoreCase(OfferSubType.NON_RECOURSE.name()))
+    {
+      return "WL-NR"
+    }
+    if (type.equalsIgnoreCase(OfferType.LOAN_PARTICIPATION.name()) && subType.equalsIgnoreCase(OfferSubType.FULL_RECOURSE.name()))
+    {
+      return "WL-FR"
+    }
+    if (type.equalsIgnoreCase(OfferType.LOAN_PARTICIPATION.name()) && subType.equalsIgnoreCase(OfferSubType.LIMITED_SUBORDINATION.name()))
+    {
+      return "WL-LS"
+    }
+  }
+}

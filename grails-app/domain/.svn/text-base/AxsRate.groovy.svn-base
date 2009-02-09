@@ -1,0 +1,14 @@
+public class AxsRate extends BaseDomain implements Serializable
+{
+  static constraints = {
+    bidder(nullable: false)
+    beginAmount(nullable: false, scale: 2)
+    endAmount(nullable: false, scale: 2)
+    percent(nullable: false, scale: 2, range: 0..100)
+  }
+  def belongsTo = Bidder
+  Bidder bidder
+  BigDecimal beginAmount = new BigDecimal("0")
+  BigDecimal endAmount = new BigDecimal("0")
+  BigDecimal percent = new BigDecimal("0")
+}

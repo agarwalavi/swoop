@@ -1,0 +1,117 @@
+class TextTemplateController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN],
+          delete: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN],
+          update: [Role.MASTER_ADMIN],
+          create: [Role.MASTER_ADMIN],
+          save: [Role.MASTER_ADMIN]
+  ]
+  def index = { redirect(action: list, params: params) }
+
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def list = {
+    if (!params.max) params.max = 10
+    [textTemplateInstanceList: TextTemplate.list(params)]
+  }
+
+  def show = {
+    def textTemplateInstance = TextTemplate.get(params.id)
+
+    if (!textTemplateInstance)
+    {
+      flash.message = "TextTemplate not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    { return [textTemplateInstance: textTemplateInstance] }
+  }
+
+  def delete = {
+    def textTemplateInstance = TextTemplate.get(params.id)
+    if (textTemplateInstance)
+    {
+      textTemplateInstance.delete()
+      flash.message = "TextTemplate ${params.id} deleted"
+      redirect(action: list)
+    }
+    else
+    {
+      flash.message = "TextTemplate not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def edit = {
+    def textTemplateInstance = TextTemplate.get(params.id)
+
+    if (!textTemplateInstance)
+    {
+      flash.message = "TextTemplate not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      return [textTemplateInstance: textTemplateInstance]
+    }
+  }
+
+  def update = {
+    def textTemplateInstance = TextTemplate.get(params.id)
+    if (textTemplateInstance)
+    {
+      textTemplateInstance.properties = params
+      // If the html flag is not set then strip out HTML stuff
+      if (!textTemplateInstance.htmlFormat)
+      {
+        println "processing remove"
+        textTemplateInstance.text = textTemplateInstance.text.replaceAll("<p>", "")
+        textTemplateInstance.text = textTemplateInstance.text.replaceAll("</p>", "")
+      }
+      if (!textTemplateInstance.hasErrors() && textTemplateInstance.save())
+      {
+        flash.message = "TextTemplate ${params.id} updated"
+        redirect(action: show, id: textTemplateInstance.id)
+      }
+      else
+      {
+        render(view: 'edit', model: [textTemplateInstance: textTemplateInstance])
+      }
+    }
+    else
+    {
+      flash.message = "TextTemplate not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+    }
+  }
+
+  def create = {
+    def textTemplateInstance = new TextTemplate()
+    textTemplateInstance.properties = params
+    return ['textTemplateInstance': textTemplateInstance]
+  }
+
+  def save = {
+    def textTemplateInstance = new TextTemplate(params)
+    // If the html flag is not set then strip out HTML stuff
+    if (!textTemplateInstance.htmlFormat)
+    {
+      textTemplateInstance.text = textTemplateInstance.text.replaceAll(/<p>/, "")
+      textTemplateInstance.text = textTemplateInstance.text.replaceAll("</p>", "")
+    }
+    if (!textTemplateInstance.hasErrors() && textTemplateInstance.save())
+    {
+      flash.message = "TextTemplate ${textTemplateInstance.id}  created"
+    }
+    else
+    {
+      render(view: 'create', model: [textTemplateInstance: textTemplateInstance])
+    }
+    redirect(action: show, id: textTemplateInstance.id)
+  }
+}

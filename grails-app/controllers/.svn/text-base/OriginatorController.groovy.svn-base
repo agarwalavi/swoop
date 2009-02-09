@@ -1,0 +1,104 @@
+class OriginatorController extends BaseController
+{
+  static authorizations = [
+          index: [Role.MASTER_ADMIN],
+          list: [Role.MASTER_ADMIN],
+          show: [Role.MASTER_ADMIN],
+          delete: [Role.MASTER_ADMIN],
+          edit: [Role.MASTER_ADMIN],
+          update: [Role.MASTER_ADMIN],
+          create: [Role.MASTER_ADMIN],
+          save: [Role.MASTER_ADMIN]
+  ]
+  def index = { redirect(action: list, params: params) }
+
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def list = {
+    if (!params.max) params.max = 10
+    [originatorInstanceList: Originator.list(params)]
+  }
+
+  def show = {
+    def originatorInstance = Originator.get(params.id)
+
+    if (!originatorInstance)
+    {
+      flash.message = "originator not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    { return [originatorInstance: originatorInstance] }
+  }
+
+  def delete = {
+    def originatorInstance = Originator.get(params.id)
+    if (originatorInstance)
+    {
+      originatorInstance.enabled = false
+      flash.message = "originator ${params.id} deleted"
+      redirect(action: list)
+    }
+    else
+    {
+      flash.message = "originator not found with id ${params.id}"
+      redirect(action: list)
+    }
+  }
+
+  def edit = {
+    def originatorInstance = Originator.get(params.id)
+
+    if (!originatorInstance)
+    {
+      flash.message = "originator not found with id ${params.id}"
+      redirect(action: list)
+    }
+    else
+    {
+      return [originatorInstance: originatorInstance]
+    }
+  }
+
+  def update = {
+    def originatorInstance = Originator.get(params.id)
+    if (originatorInstance)
+    {
+      originatorInstance.properties = params
+      if (!originatorInstance.hasErrors() && originatorInstance.save())
+      {
+        flash.message = "originator ${params.id} updated"
+        redirect(action: show, id: originatorInstance.id)
+      }
+      else
+      {
+        render(view: 'edit', model: [originatorInstance: originatorInstance])
+      }
+    }
+    else
+    {
+      flash.message = "originator not found with id ${params.id}"
+      redirect(action: edit, id: params.id)
+    }
+  }
+
+  def create = {
+    def originatorInstance = new Originator()
+    originatorInstance.properties = params
+    return ['originatorInstance': originatorInstance]
+  }
+
+  def save = {
+    def originatorInstance = new Originator(params)
+    if (!originatorInstance.hasErrors() && originatorInstance.save())
+    {
+      flash.message = "originator ${originatorInstance.id} created"
+      redirect(action: show, id: originatorInstance.id)
+    }
+    else
+    {
+      render(view: 'create', model: [originatorInstance: originatorInstance])
+    }
+  }
+}

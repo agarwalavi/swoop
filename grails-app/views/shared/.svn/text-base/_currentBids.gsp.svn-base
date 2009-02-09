@@ -1,0 +1,49 @@
+<div class="tableHeading">Current Bids</div>
+<div class="table">
+  <table>
+    <thead>
+    <tr>
+      <th></th>
+      <th>Status</th>
+      <th>Amount</th>
+      <th>Coupon</th>
+      <th>Projected Award</th>
+      <g:if test="${large != null && large == 'true'}">
+        <th>Price</th>
+        <th>Awarded Amount</th>
+        <th>Bid Date</th>
+        <th>Action</th>
+      </g:if>
+    </tr>
+    </thead>
+    <tbody>
+    <g:each in="${currentBids}" status="i" var="currentBid">
+      <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+        <td>
+          <g:if test="${currentBid?.myBid == true}">
+            *
+          </g:if>
+        </td>
+        <td><g:formatEnum value="${currentBid?.status}"/></td>
+        <td><g:formatMoney money="${currentBid?.amt}"/></td>
+        <td>${currentBid?.couponPct}%</td>
+        <td><g:formatMoney money="${currentBid?.pendingAmt}"/></td>
+        <g:if test="${large != null && large == 'true'}">
+          <td>${currentBid?.pricePct}%</td>
+          <td><g:formatMoney money="${currentBid?.awardedAmt}"/></td>
+          <td><g:formatDate format="MM-dd-yy hh a" date="${currentBid?.dateCreated}"/></td>
+          <g:if test="${currentBid?.status == 'ACTIVE'}">
+            <td><g:link controller="bid" action="award" id="${currentBid?.id}">Award</g:link>&ensp;<g:link controller="bid" action="deActivate" id="${currentBid?.id}">DeActivate</g:link></td>
+          </g:if>
+          <g:if test="${currentBid?.status == 'INACTIVE'}">
+            <td><g:link controller="bid" action="activate" id="${currentBid?.id}">Activate</g:link></td>
+          </g:if>
+          <g:if test="${currentBid?.status == 'AWARDED'}">
+            <td><g:link controller="bid" action="unAward" id="${currentBid?.id}">UnAward</g:link></td>
+          </g:if>
+        </g:if>
+      </tr>
+    </g:each>
+    </tbody>
+  </table>
+</div>

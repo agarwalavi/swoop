@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/cmmc/!svn/ver/192/trunk/acig/acigweb/grails-app/views/login
+END
+openIdAuth.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/cmmc/!svn/ver/192/trunk/acig/acigweb/grails-app/views/login/openIdAuth.gsp
+END
+auth.gsp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/cmmc/!svn/ver/192/trunk/acig/acigweb/grails-app/views/login/auth.gsp
+END

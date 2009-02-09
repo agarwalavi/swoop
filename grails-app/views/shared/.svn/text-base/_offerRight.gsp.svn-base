@@ -1,0 +1,39 @@
+<div id="offerRight">
+  <div id="offerData1l">
+    <div>&nbsp;</div>
+    <g:acigOutputValue id="offer.originator" type="STRING" label="offer.originator" value="${offer.originator.companyName}"/>
+    <g:acigOutputValue id="offer.participationAmt" type="MONEY" label="offer.participationAmt" value="${offer.participationAmt}"/>
+    <div>&nbsp;</div>
+    <g:acigOutputValue id="offer.minSubscriptionAmt" type="MONEY" label="offer.minSubscriptionAmt" value="${offer.minSubscriptionAmt}"/>
+    <g:acigOutputValue id="offer.maxSubscriptionAmt" type="MONEY" label="offer.maxSubscriptionAmt" value="${offer.maxSubscriptionAmt}"/>
+    <g:acigOutputValue id="offer.fillOrKillAmt" type="MONEY" label="offer.fillOrKillAmt" value="${offer.fillOrKillAmt}"/>
+    <div>&nbsp;</div>
+    <g:acigOutputValue id="offer.maxCouponPct" type="PERCENT" label="offer.maxCouponPct" value="${offer.maxCouponPct}"/>
+    <div>&nbsp;</div>
+    <g:acigOutputValue id="offer.servicer" type="STRING" label="offer.servicer" value="${offer.servicer}"/>
+    <div>&nbsp;</div>
+    <g:acigOutputValue id="offer.servicingFeesPct" type="PERCENT" label="offer.servicingFeesPct" value="${offer.servicingFeesPct}"/>
+  </div>
+  <div id="offerData2l">
+    <div>&nbsp;</div>
+    <g:acigOutputValue id="offer.subordinationPct" type="PERCENT" label="offer.subordinationPct" value="${offer.subordinationPct}"/>
+    <g:acigOutputValue id="offer.lossCoverage" type="NUMBER" numberFormat="###,##0.00" label="offer.lossCoverage" value="${offer.lossCoverage}"/>
+    <div>&nbsp;</div>
+    <g:acigOutputValue id="offer.expectedCumulativeLossPct" type="PERCENT" label="offer.expectedCumulativeLossPct" value="${offer.expectedCumulativeLossPct}"/>
+    <div>&nbsp;</div>
+  </div>
+  <div id="offerData3l">
+    <div>&nbsp;</div>
+    <g:acigOutputValue id="offer.expectedAvgLife" type="NUMBER" numberFormat="###,##0.00" label="offer.expectedAvgLife" value="${offer.expectedAvgLife}"/>
+    <g:acigOutputValue id="offer.yieldImpactFromLossPct" type="NUMBER" numberFormat="###,##0.00" label="offer.yieldImpactFromLossPct" value="${offer.yieldImpactFromLossPct}"/>
+    <div>&nbsp;</div>
+    <g:acigOutputValue id="offer.projectedMonthlyYieldPct" type="PERCENT" label="offer.projectedMonthlyYieldPct" value="${offer.projectedMonthlyYieldPct}"/>
+    <g:acigOutputValue id="offer.projectedBondYieldPct" type="PERCENT" label="offer.projectedBondYieldPct" value="${offer.projectedBondYieldPct}"/>
+    <div>&nbsp;</div>
+    <div id="yieldDisclaimerLink">
+      <a href="<g:createLink action='yieldDisclaimer' controller='offer' id='${offer.id}'/>" target='_blank'>
+        <g:message code="offer.yieldDisclaimer.label"/>
+      </a>
+    </div>
+  </div>
+</div>

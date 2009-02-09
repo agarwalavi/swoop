@@ -1,0 +1,33 @@
+<div id="portfolioMetrics">
+  <div id="metricsHeading"><g:message code="offer.metricsHeading"/></div>
+  <g:acigOutputValue id="offer.originalContractAmt" type="MONEY" label="offer.originalContractAmt" value="${offer.originalContractAmt}"/>
+  <g:acigOutputValue id="offer.currentContractAmt" type="MONEY" label="offer.currentContractAmt" value="${offer.currentContractAmt}"/>
+  <div>&nbsp;</div>
+  <g:acigOutputValue id="offer.participationPct" type="PERCENT" label="offer.participationPct" value="${offer.participationPct}"/>
+  <div>&nbsp;</div>
+  <g:acigOutputValue id="offer.loanCount" type="NUMBER" label="offer.loanCount" value="${offer.loanCount}"/>
+  <div>&nbsp;</div>
+  <g:acigOutputValue id="offer.avgLoanBalanceAmt" type="MONEY" label="offer.avgLoanBalanceAmt" value="${offer.avgLoanBalanceAmt}"/>
+  <g:acigOutputValue id="offer.minLoanBalanceAmt" type="MONEY" label="offer.minLoanBalanceAmt" value="${offer.minLoanBalanceAmt}"/>
+  <g:acigOutputValue id="offer.maxLoanBalanceAmt" type="MONEY" label="offer.maxLoanBalanceAmt" value="${offer.maxLoanBalanceAmt}"/>
+  <div>&nbsp;</div>
+  <g:acigOutputValue id="offer.avgAPRPct" type="PERCENT" label="offer.avgAPRPct" value="${offer.avgAPRPct}"/>
+  <div>&nbsp;</div>
+  <g:acigOutputValue id="offer.avgFico" type="NUMBER" label="offer.avgFico" value="${offer.avgFico}"/>
+  <g:acigOutputValue id="offer.maxFico" type="NUMBER" label="offer.maxFico" value="${offer.maxFico}"/>
+  <g:acigOutputValue id="offer.minFico" type="NUMBER" label="offer.minFico" value="${offer.minFico}"/>
+  <div>&nbsp;</div>
+  <g:acigOutputValue id="offer.avgPaymentAmt" type="MONEY" label="offer.avgPaymentAmt" value="${offer.avgPaymentAmt}"/>
+  <g:acigOutputValue id="offer.avgTerm" type="NUMBER" numberFormat="###,##0.00" label="offer.avgTerm" value="${offer.avgTerm}"/>
+  <g:acigOutputValue id="offer.avgMonthsRemaining" type="NUMBER" numberFormat="###,##0.00" label="offer.avgMonthsRemaining" value="${offer.avgMonthsRemaining}"/>
+  <div>&nbsp;</div>
+  <g:acigOutputValue id="offer.avgNewPct" type="PERCENT" label="offer.avgNewPct" value="${offer.avgNewPct}"/>
+  <g:acigOutputValue id="offer.avgUsedPct" type="PERCENT" label="offer.avgUsedPct" value="${offer.avgUsedPct}"/>
+  <div>&nbsp;</div>
+  <a href="javascript:openStateConcentration();" class="button" id="openTimelineDialog"><span>State Concentration Chart</span></a>
+  <div>&nbsp;</div>
+  <div style="display: none;" id="stateConcentrationDialog" title="State Concentration">
+    <img width='350' height='350' src='${createLink(controller: 'offer',
+            action: 'stateConcentration')}?id=${offer.id}&r=${System.currentTimeMillis()}'/></div>
+</div>
+<div>&nbsp;</div>

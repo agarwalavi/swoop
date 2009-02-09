@@ -1,0 +1,48 @@
+public class SubscriptionService
+{
+  boolean transactional = true
+
+  def serviceMethod()
+  {
+  }
+
+  def getSubscriptionList(User inUser)
+  {
+    if (inUser.bidders != null && inUser.bidders.size() > 0)
+    {
+      return Subscription.createCriteria().list() {
+        // My subscriptions only
+        'in'('bidder', inUser.bidders)
+      }
+    }
+  }
+
+  def getSubscriptions(User inUser)
+  {
+//    String query = "from Subscription s where s.bidder.user.id = "
+    List subscriptions = new ArrayList()
+
+    Subscription subscription = new Subscription();
+
+    subscription.currentSummary = new SubscriptionReportSummary();
+    subscription.currentSummary.principalBalanceAmt = 25
+    subscription.currentSummary.purchaseAmt = 28
+
+    subscription.pastSummary = new SubscriptionReportSummary()
+    subscription.pastSummary.principalBalanceAmt = 26
+    subscription.pastSummary.purchaseAmt = 28
+
+    subscription.deltaSummary = new SubscriptionReportSummary()
+    subscription.deltaSummary.principalBalanceAmt = 1
+    subscription.deltaSummary.purchaseAmt = 0
+
+    subscriptions.add(subscription)
+
+    return subscriptions
+  }
+
+  def getSubscriptionsForOffer(Offer inOffer)
+  {
+    return Subscription.findAllByOffer(inOffer)
+  }
+}

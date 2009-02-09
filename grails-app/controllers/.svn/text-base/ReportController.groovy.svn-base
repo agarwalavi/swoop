@@ -1,0 +1,100 @@
+import net.sf.jasperreports.view.JasperViewer
+import ar.com.fdvs.dj.output.ReportWriter
+import ar.com.fdvs.dj.output.ReportWriterFactory
+
+class ReportController extends BaseController
+{
+  static authorizations = [
+          offerSummaryReport: [Role.MASTER_ADMIN],
+          subscriptionReportSummary: [Role.MASTER_ADMIN],
+          loadData: [Role.MASTER_ADMIN],
+          upload: [Role.MASTER_ADMIN],
+          report: [Role.MASTER_ADMIN],
+          summary: [Role.MASTER_ADMIN],
+          trialBalance: [Role.MASTER_ADMIN]
+  ]
+
+  def reportService
+  def subscriptionService
+  def dataLoadingService
+
+  def defaultAction = "report"
+
+  // the delete, save and update actions only accept POST requests
+  def allowedMethods = [delete: 'POST', save: 'POST', update: 'POST']
+
+  def report = {
+    def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    def subscriptions = subscriptionService.getSubscriptionList(userInstance)
+    [subscriptions: subscriptions]
+  }
+
+  def trialBalance = {
+    println " Trial Balance Report offer id " + params.id
+    def userInstance = User.findByUsername(authenticateService.principal().getUsername())
+    def subscriptions = Subscription.findAll()
+    def report = reportService.subscriptionReportSummary(subscriptions)
+    ReportWriter reportWriter = ReportWriterFactory.getInstance().getReportWriter(report, 'HTML', [:]);
+    reportWriter.writeTo(response);
+  }
+
+  def summary = {
+    def month = params.reportDate_month
+    def year = params.reportDate_year
+    println "Summary Report month " + month + " year " + year
+    def subscriptions = Subscription.findAll()
+    def report = reportService.subscriptionReportSummary(subscriptions)
+
+   ReportWriter reportWriter = ReportWriterFactory.getInstance().getReportWriter(report, 'HTML', [:]);
+   reportWriter.writeTo(response);
+  }
+
+  def loadData = {
+    // Get the offers for this affiliate
+    // TODO Add affliate list
+  }
+
+  def upload = {
+    def f = request.getFile('dataFile')
+    def errors = [:]
+    String offerId = params.offerId
+    if (offerId == 'null' || offerId.length() == 0)
+    {
+      flash.error = "You must select an offer to load"
+      redirect(action: 'loadData')
+      return
+    }
+    Offer offer = Offer.get(Long.valueOf(offerId))
+    if (!f.empty)
+    {
+      try
+      {
+        errors = dataLoadingService.loadMonthlyData(f.getInputStream(), offer, "MM/dd/yyyy")
+      }
+      catch (Exception ex)
+      {
+        flash.error = "A major error has occured in the upload"
+        log.fatal("Major Upload error in report data upload", ex)
+        redirect(action: 'loadData')
+        return
+      }
+      def badLines = errors["BADLINES"]
+      def successCount = errors["SUCCESSCOUNT"]
+      def lineCount = errors["TOTALLINES"]
+      if (badLines == null || badLines.size() == 0)
+      {
+        flash.message = successCount + " Lines were successfully imported of a total of " + lineCount
+      }
+      else
+      {
+        flash.error = "Data was not imported due to Erorrs in input data.  Please correct and try again."
+      }
+    }
+    else
+    {
+      flash.error = "You must select a file to upload."
+    }
+    def map = [offerId: offerId, errors: errors]
+    render(view: 'loadData', model: map)
+  }
+}

@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/cmmc/!svn/ver/202/trunk/acig/acigweb/grails-app/controllers
+END
+HomeController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/cmmc/!svn/ver/187/trunk/acig/acigweb/grails-app/controllers/HomeController.groovy
+END
+AutoOfferDetailController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/cmmc/!svn/ver/179/trunk/acig/acigweb/grails-app/controllers/AutoOfferDetailController.groovy
+END
+BidController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/cmmc/!svn/ver/205/trunk/acig/acigweb/grails-app/controllers/BidController.groovy
+END
+SubscriptionController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/cmmc/!svn/ver/163/trunk/acig/acigweb/grails-app/controllers/SubscriptionController.groovy
+END
+OfferController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/cmmc/!svn/ver/205/trunk/acig/acigweb/grails-app/controllers/OfferController.groovy
+END
+OriginatorController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/cmmc/!svn/ver/163/trunk/acig/acigweb/grails-app/controllers/OriginatorController.groovy
+END
+CaptchaController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/cmmc/!svn/ver/123/trunk/acig/acigweb/grails-app/controllers/CaptchaController.groovy
+END
+RoleController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/cmmc/!svn/ver/184/trunk/acig/acigweb/grails-app/controllers/RoleController.groovy
+END
+BidderController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/cmmc/!svn/ver/199/trunk/acig/acigweb/grails-app/controllers/BidderController.groovy
+END
+ReportController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/cmmc/!svn/ver/202/trunk/acig/acigweb/grails-app/controllers/ReportController.groovy
+END
+PlaceHolderController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/cmmc/!svn/ver/161/trunk/acig/acigweb/grails-app/controllers/PlaceHolderController.groovy
+END
+BaseController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/cmmc/!svn/ver/140/trunk/acig/acigweb/grails-app/controllers/BaseController.groovy
+END
+AffiliateController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/cmmc/!svn/ver/163/trunk/acig/acigweb/grails-app/controllers/AffiliateController.groovy
+END
+UserController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/cmmc/!svn/ver/197/trunk/acig/acigweb/grails-app/controllers/UserController.groovy
+END
+LogoutController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/cmmc/!svn/ver/123/trunk/acig/acigweb/grails-app/controllers/LogoutController.groovy
+END
+LoginController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/cmmc/!svn/ver/123/trunk/acig/acigweb/grails-app/controllers/LoginController.groovy
+END
+TrackedIndexController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/cmmc/!svn/ver/161/trunk/acig/acigweb/grails-app/controllers/TrackedIndexController.groovy
+END
+TextTemplateController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/cmmc/!svn/ver/202/trunk/acig/acigweb/grails-app/controllers/TextTemplateController.groovy
+END
+RegisterController.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/cmmc/!svn/ver/130/trunk/acig/acigweb/grails-app/controllers/RegisterController.groovy
+END

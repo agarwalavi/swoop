@@ -1,0 +1,65 @@
+import org.apache.commons.httpclient.HttpClient
+import org.apache.commons.httpclient.HttpMethod
+import org.apache.commons.httpclient.methods.GetMethod
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler
+import org.apache.commons.httpclient.HttpException
+import org.apache.commons.httpclient.params.HttpMethodParams
+import org.apache.commons.httpclient.HttpStatus
+
+
+class IndexUpdateJob
+{
+  def startDelay = 60000
+  def cronExpression = "0 0 0 * * ?"
+  def group = "WebServiceGroup"
+
+  def execute()
+  {
+    println " All indexes " + TrackedIndex.list();
+    if (true)
+    {
+      return
+    }
+    String bondUrl = "http://online.wsj.com/mdc/public/page/mdc_bonds.html"
+    //String testUrl = "http://www.apache.org/";
+    // Create an instance of HttpClient.
+    HttpClient client = new HttpClient();
+
+    // Create a method instance.
+    GetMethod method = new GetMethod(bondUrl);
+
+    // Provide custom retry handler is necessary
+    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
+            new DefaultHttpMethodRetryHandler(3, false));
+
+    try
+    {
+      // Execute the method.
+      int statusCode = client.executeMethod(method);
+
+      if (statusCode != HttpStatus.SC_OK)
+      {
+        println "Method failed: " + method.getStatusLine();
+      }
+
+      // Read the response body.
+      byte[] responseBody = method.getResponseBody();
+
+      // Deal with the response.
+      // Use caution: ensure correct character encoding and is not binary data
+      println(new String(responseBody));
+    } catch (HttpException e)
+    {
+      println "Fatal protocol violation: " + e.getMessage();
+      e.printStackTrace();
+    } catch (IOException e)
+    {
+      println "Fatal transport error: " + e.getMessage();
+      e.printStackTrace();
+    } finally
+    {
+      // Release the connection.
+      method.releaseConnection();
+    }
+  }
+}

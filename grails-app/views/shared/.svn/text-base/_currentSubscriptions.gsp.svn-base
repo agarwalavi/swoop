@@ -1,0 +1,25 @@
+<div class="tableHeading">Current Subscriptions</div>
+<div class="table">
+  <table>
+    <thead>
+    <tr>
+      <th>Bidder</th>
+      <th>Coupon Percent</th>
+      <th>Ownership Percent</th>
+      <th>Effective Date</th>
+      <th>Settlement Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <g:each in="${currentSubscriptions}" status="i" var="currentSubscription">
+      <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+        <td>${currentSubscription?.bidder?.companyName}</td>
+        <td>${currentSubscription?.couponPct}%</td>
+        <td>${currentSubscription?.ownershipPct}%</td>
+        <td><g:formatDate format="MM/dd/yy" date="${currentSubscription?.effectiveDate}"/></td>
+        <td><g:formatDate format="MM/dd/yy" date="${currentSubscription?.settlementDate}"/></td>
+      </tr>
+    </g:each>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/cmmc/!svn/ver/202/trunk/acig/acigweb/grails-app/i18n
+END
+jasper.properties
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/cmmc/!svn/ver/123/trunk/acig/acigweb/grails-app/i18n/jasper.properties
+END
+messages.properties
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/cmmc/!svn/ver/202/trunk/acig/acigweb/grails-app/i18n/messages.properties
+END
+settings.properties
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/cmmc/!svn/ver/123/trunk/acig/acigweb/grails-app/i18n/settings.properties
+END
