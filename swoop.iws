@@ -68,13 +68,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Vehicle.groovy" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="Vehicle.groovy" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grails-app/domain/Vehicle.groovy">
           <provider editor-type-id="org.jetbrains.plugins.grails.perspectives.DomainClassesRelationsEditorProvider">
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="4" selection-start="928" selection-end="928" vertical-scroll-proportion="0.40078586">
+            <state line="17" column="4" selection-start="928" selection-end="928" vertical-scroll-proportion="-2.4">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BootStrap.groovy" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="25" column="22" selection-start="569" selection-end="569" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DataSource.groovy" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/grails-app/conf/DataSource.groovy">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="41" column="59" selection-start="1198" selection-end="1198" vertical-scroll-proportion="0.68472904">
               <folding />
             </state>
           </provider>
@@ -630,6 +648,14 @@
       <option name="HOST" value="localhost" />
       <option name="PORT" value="5005" />
     </configuration>
+    <configuration default="true" type="GroovyScriptRunConfiguration" factoryName="Groovy Script">
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="." />
+      <setting name="debug" value="false" />
+    </configuration>
     <configuration default="true" type="Applet" factoryName="Applet">
       <module name="" />
       <option name="MAIN_CLASS_NAME" />
@@ -805,13 +831,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/grails-app/views/role/create.gsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="48" selection-start="383" selection-end="388" vertical-scroll-proportion="0.42222223">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/views/user/edit.gsp">
       <provider selected="true" editor-type-id="text-editor">
         <state line="41" column="50" selection-start="379" selection-end="384" vertical-scroll-proportion="0.9111111">
@@ -892,13 +911,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="119" column="33" selection-start="2768" selection-end="2768" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/views/vehicle/edit.gsp">
       <provider selected="true" editor-type-id="text-editor">
         <state line="121" column="37" selection-start="4961" selection-end="4961" vertical-scroll-proportion="4.6666665">
@@ -918,7 +930,21 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="4" selection-start="928" selection-end="928" vertical-scroll-proportion="0.40078586">
+        <state line="17" column="4" selection-start="928" selection-end="928" vertical-scroll-proportion="-2.4">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="22" selection-start="569" selection-end="569" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/conf/DataSource.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="41" column="59" selection-start="1198" selection-end="1198" vertical-scroll-proportion="0.68472904">
           <folding />
         </state>
       </provider>

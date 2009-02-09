@@ -1,0 +1,13 @@
+<plugin name='morph-deploy' version='0.1'>
+  <author>Marc Palmer</author>
+  <authorEmail>marc@anyware.co.uk</authorEmail>
+  <title>Deploy applications to Mor.ph hosting</title>
+  <description>Adds the JNDI datasource and mail sessions for Mor.ph hosting and provides deploy script
+</description>
+  <documentation>http://grails.org/MorphDeploy+Plugin</documentation>
+  <resources>
+    <resource>DataSource</resource>
+    <resource>spring.resources</resource>
+    <resource>UrlMappings</resource>
+  </resources>
+</plugin>

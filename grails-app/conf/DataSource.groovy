@@ -36,9 +36,17 @@ environments {
   }
   production {
     dataSource {
+      driverClassName = 'com.mysql.jdbc.Driver'
       dbCreate = "update"
-      jndiName = "java:comp/env/jdbc/swoopDS"
+      jndiName = "java:comp/env/jdbc/morph-ds"
       dialect = 'org.hibernate.dialect.MySQL5InnoDBDialect'
     }
   }
+//  production {
+//    dataSource {
+//      dbCreate = "update"
+//      jndiName = "java:comp/env/jdbc/swoopDS"
+//      dialect = 'org.hibernate.dialect.MySQL5InnoDBDialect'
+//    }
+//  }
 }

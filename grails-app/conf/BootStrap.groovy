@@ -20,7 +20,10 @@ class BootStrap
     }
     if (GrailsUtil.environment == GrailsApplication.ENV_PRODUCTION)
     {
-      //createAdminUser()
+      createRoles()
+      createUsers()
+      createReference()
+      createLocation()
     }
     def destroy =
     {
