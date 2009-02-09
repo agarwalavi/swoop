@@ -39,7 +39,7 @@ class BootStrap
 
     role = new Role()
     role.authority = "ROLE_SWOOP_USER"
-    role.description = "User of the AXS System"
+    role.description = "User of the Swoop System"
     role.save()
   }
 
@@ -50,16 +50,16 @@ class BootStrap
     user.username = "admin"
     user.passwd = "21232f297a57a5a743894a0e4a801fc3"
     user.enabled = true
-    user.contact.firstName = "Scott"
-    user.contact.lastName = "Ryan"
-    user.contact.phone = "3032633044"
-    user.contact.mobilePhone = "3032630344"
-    user.contact.emailAddress = "scott@theryansplace.com"
-    user.companyName = "Soaring Eagle L.L.C."
-    user.mailAddress.addressLineOne = "47 Park Ave"
-    user.mailAddress.city = "Long Beach"
+    user.contact.firstName = "Admin"
+    user.contact.lastName = "Stevens"
+    user.contact.phone = "8888888888"
+    user.contact.mobilePhone = "8888888888"
+    user.contact.emailAddress = "xxxx@swoop.com"
+    user.companyName = "Trucking International"
+    user.mailAddress.addressLineOne = "89 Jasper Park Ave"
+    user.mailAddress.city = "Redondo Beach"
     user.mailAddress.province = "CA"
-    user.mailAddress.postalCode = "90803"
+    user.mailAddress.postalCode = "90808"
 
     user.authorities = [Role.get(1)]
     if (!user.save())

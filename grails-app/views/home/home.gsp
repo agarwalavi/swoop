@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-  <title>ACIG Management Home</title>
+  <title>Swoop Home</title>
   <meta name="layout" content="main"/>
   <g:javascript src="jquery/jquery.js"/>
   <!-- You must call this no conflict before loading the ui library -->
